@@ -1,0 +1,2596 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador de Instalação Elétrica Online · Painel de Ligações</title>
+<meta name="description" content="Simulador de instalação elétrica residencial grátis e online: monte o quadro de distribuição com disjuntores, DR, DPS, Wago, interruptores (simples, paralelo, intermediário e smart Wi-Fi), lâmpadas e tomadas, ligue os fios e teste com energia de verdade.">
+<meta name="keywords" content="simulador elétrico, simulador de instalação elétrica, esquema elétrico residencial, quadro de distribuição, diagrama de ligação, interruptor paralelo, three-way, four-way, interruptor smart wifi, conector wago, disjuntor, DR, DPS, NBR 5410, eletricista">
+<meta name="author" content="Alberto Guth">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#f5a000">
+<link rel="canonical" href="https://asguth.github.io/simulador-instalacao-eletrica/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23f5a000'/%3E%3Cpath d='M13.6 2.5 5.8 13.2h5.1L9.9 21.5l8.3-11.2h-5.3z' fill='%231b1300'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Painel de Ligações">
+<meta property="og:title" content="Simulador de Instalação Elétrica Online · Painel de Ligações">
+<meta property="og:description" content="Monte o quadro, ligue disjuntores, interruptores, Wago e lâmpadas, e teste o circuito energizado direto no navegador. Grátis.">
+<meta property="og:url" content="https://asguth.github.io/simulador-instalacao-eletrica/">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Painel de Ligações — Simulador de Instalação Elétrica","url":"https://asguth.github.io/simulador-instalacao-eletrica/","applicationCategory":"EducationalApplication","operatingSystem":"Any (navegador)","inLanguage":"pt-BR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"BRL"},"author":{"@type":"Person","name":"Alberto Guth"},"license":"https://opensource.org/licenses/MIT"}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: o quadro (SVG) ocupa a tela inteira; toda a interface flutua por cima em painéis de vidro líquido */
+:root{
+  --bg:#e9e8e3; --board:#fbfbf9; --grid:#ecebe6; --grid-major:#dad9d3; --ruler:#9a9992;
+  --ink:#141413; --muted:#6c6b66; --faint:#9b9a94;
+  --line:rgba(20,20,18,.09); --line-2:rgba(20,20,18,.16);
+  --glass:rgba(255,255,255,.5); --glass-2:rgba(255,255,255,.8); --glass-brd:rgba(255,255,255,.92); --glass-hi:rgba(255,255,255,1); --glass-lo:rgba(0,0,0,.05);
+  --glass-shadow:0 22px 50px -20px rgba(40,38,30,.38),0 4px 14px -6px rgba(40,38,30,.16);
+  --field:rgba(255,255,255,.55); --field-h:rgba(255,255,255,.9); --field-brd:rgba(20,20,18,.08); --hover:rgba(20,20,18,.06);
+  --accent:#f5a000; --accent-2:#ffc94a; --accent-ink:#1b1300; --accent-soft:rgba(245,160,0,.15);
+  --node:#ffffff; --node-line:#d4d3cd; --node-ink:#1f1f1d; --node-head:#f4f3ef;
+  --casca:rgba(20,20,18,.3); --sel:#2b7bff;
+  --k-prot:#3b6cff; --k-wago:#ff7a1a; --k-int:#8b5cf6; --k-carga:#e09d00; --k-outro:#0fae9a;
+  --t-F:#e5383b; --t-N:#2ea3f2; --t-PE:#22a052; --t-C:#b8860b; --t-R:#d9b100; --t-L:#ff7a1a; --t-X:#8d8c86;
+  --e-fase:#ff9500; --e-dot:#fff1b8; --e-neutro:#2ea3f2; --e-morto:#a8a7a0;
+  --ok:#16a34a; --warn:#d97706; --err:#e5383b;
+  --halo-blend:multiply; --halo-op:.55;
+  --f-ui:"Manrope",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --mola:cubic-bezier(.34,1.56,.64,1); --suave:cubic-bezier(.22,1,.36,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#111111; --board:#181817; --grid:#1f1f1e; --grid-major:#2a2a29; --ruler:#5d5c57;
+  --ink:#f3f2ed; --muted:#9d9c95; --faint:#6b6a64;
+  --line:rgba(255,255,255,.07); --line-2:rgba(255,255,255,.13);
+  --glass:rgba(32,32,31,.48); --glass-2:rgba(52,52,50,.6); --glass-brd:rgba(255,255,255,.1); --glass-hi:rgba(255,255,255,.22); --glass-lo:rgba(0,0,0,.45);
+  --glass-shadow:0 26px 60px -18px rgba(0,0,0,.8),0 6px 18px -8px rgba(0,0,0,.6);
+  --field:rgba(255,255,255,.045); --field-h:rgba(255,255,255,.1); --field-brd:rgba(255,255,255,.08); --hover:rgba(255,255,255,.07);
+  --accent:#ffb020; --accent-2:#ffd36b; --accent-soft:rgba(255,176,32,.16);
+  --node:#20201f; --node-line:#3a3a38; --node-ink:#ecebe5; --node-head:#282827;
+  --casca:rgba(0,0,0,.65); --sel:#5c9dff;
+  --k-prot:#6b8cff; --k-wago:#ff8a33; --k-int:#a17bff; --k-carga:#ffbe2e; --k-outro:#2dd4bf;
+  --t-X:#77766f; --e-fase:#ffb020; --e-dot:#fff6d8; --e-morto:#5f5e59;
+  --ok:#34d399; --warn:#fbbf24; --err:#ff5a5f;
+  --halo-blend:screen; --halo-op:.9;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#111111; --board:#181817; --grid:#1f1f1e; --grid-major:#2a2a29; --ruler:#5d5c57;
+  --ink:#f3f2ed; --muted:#9d9c95; --faint:#6b6a64;
+  --line:rgba(255,255,255,.07); --line-2:rgba(255,255,255,.13);
+  --glass:rgba(32,32,31,.48); --glass-2:rgba(52,52,50,.6); --glass-brd:rgba(255,255,255,.1); --glass-hi:rgba(255,255,255,.22); --glass-lo:rgba(0,0,0,.45);
+  --glass-shadow:0 26px 60px -18px rgba(0,0,0,.8),0 6px 18px -8px rgba(0,0,0,.6);
+  --field:rgba(255,255,255,.045); --field-h:rgba(255,255,255,.1); --field-brd:rgba(255,255,255,.08); --hover:rgba(255,255,255,.07);
+  --accent:#ffb020; --accent-2:#ffd36b; --accent-soft:rgba(255,176,32,.16);
+  --node:#20201f; --node-line:#3a3a38; --node-ink:#ecebe5; --node-head:#282827;
+  --casca:rgba(0,0,0,.65); --sel:#5c9dff;
+  --k-prot:#6b8cff; --k-wago:#ff8a33; --k-int:#a17bff; --k-carga:#ffbe2e; --k-outro:#2dd4bf;
+  --t-X:#77766f; --e-fase:#ffb020; --e-dot:#fff6d8; --e-morto:#5f5e59;
+  --ok:#34d399; --warn:#fbbf24; --err:#ff5a5f;
+  --halo-blend:screen; --halo-op:.9;
+  color-scheme:dark;
+}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:14px;overflow:hidden;-webkit-font-smoothing:antialiased;--gl:16px;--fr:16px}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--sel);outline-offset:2px}
+::selection{background:var(--accent-soft)}
+.i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- área de trabalho (fundo) ---------- */
+.bancada{position:fixed;inset:0;overflow:hidden;
+  background:radial-gradient(1100px 700px at 12% -10%,color-mix(in srgb,var(--accent) 9%,transparent),transparent 70%),
+             radial-gradient(900px 700px at 105% 110%,color-mix(in srgb,var(--sel) 10%,transparent),transparent 70%),var(--bg)}
+#tela{width:100%;height:100%;display:block;touch-action:none;user-select:none;-webkit-user-select:none}
+#tela.pan{cursor:grab}
+.varredura{position:absolute;inset:0;pointer-events:none;opacity:0;
+  background:linear-gradient(100deg,transparent 0 40%,color-mix(in srgb,var(--e-fase) 22%,transparent) 48%,color-mix(in srgb,#fff 40%,transparent) 50%,color-mix(in srgb,var(--e-fase) 22%,transparent) 52%,transparent 60% 100%);
+  background-size:250% 100%;mix-blend-mode:plus-lighter}
+.varredura.ativa{animation:varrer 1.3s var(--suave)}
+@keyframes varrer{0%{opacity:1;background-position:120% 0}100%{opacity:.0;background-position:-30% 0}}
+.vinheta{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .8s;
+  background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.55) 100%)}
+.sim.blecaute .vinheta{opacity:1;animation:blecaute 3.5s ease-in-out infinite}
+@keyframes blecaute{0%,100%{opacity:.85}47%{opacity:.85}50%{opacity:.55}53%{opacity:.9}56%{opacity:.7}}
+.vinheta.flash{animation:flash .7s ease-out!important;opacity:0}
+@keyframes flash{0%{opacity:1;background:radial-gradient(ellipse at center,rgba(255,240,200,.55),rgba(255,60,40,.5))}100%{opacity:0}}
+.bancada.tremor{animation:tremor .5s cubic-bezier(.36,.07,.19,.97)}
+@keyframes tremor{10%,90%{transform:translate(-1px,1px)}20%,80%{transform:translate(3px,-2px)}30%,50%,70%{transform:translate(-6px,3px)}40%,60%{transform:translate(6px,-3px)}}
+
+/* ---------- vidro líquido ---------- */
+.glass{position:relative;isolation:isolate;border-radius:var(--r,22px);
+  background:linear-gradient(165deg,var(--glass-2),var(--glass) 38%,var(--glass) 70%,color-mix(in srgb,var(--glass-2) 60%,transparent));
+  -webkit-backdrop-filter:blur(24px) saturate(185%);backdrop-filter:blur(24px) saturate(185%);
+  border:1px solid var(--glass-brd);
+  box-shadow:inset 0 1px 0 var(--glass-hi),inset 0 -1px 0 var(--glass-lo),inset 0 0 22px -8px color-mix(in srgb,var(--glass-hi) 50%,transparent),var(--glass-shadow)}
+.glass.liquido{backdrop-filter:url(#lgRefr) blur(22px) saturate(190%)}
+/* brilho especular que acompanha o mouse */
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;opacity:0;transition:opacity .5s;
+  background:radial-gradient(380px circle at var(--mx,50%) var(--my,0%),color-mix(in srgb,var(--glass-hi) 55%,transparent),transparent 55%)}
+.glass:hover::before{opacity:.7}
+/* aro de refração */
+.glass::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.2px;pointer-events:none;
+  background:linear-gradient(140deg,var(--glass-hi),transparent 28%,transparent 62%,color-mix(in srgb,var(--glass-hi) 60%,transparent) 88%,transparent);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.9}
+
+/* ---------- barra superior ---------- */
+.barra{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:4px;padding:6px;--r:20px;max-width:calc(100% - 24px);overflow-x:auto;scrollbar-width:none;animation:entraCima .8s var(--mola) both}
+.barra::-webkit-scrollbar{display:none}
+@keyframes entraCima{from{transform:translate(-50%,-40px) scale(.96);opacity:0}}
+.marca{display:flex;align-items:center;gap:9px;font-weight:800;font-size:15px;letter-spacing:-.01em;padding:0 10px 0 4px;white-space:nowrap}
+.logo{width:32px;height:32px;border-radius:11px;display:grid;place-items:center;flex:none;
+  background:linear-gradient(145deg,var(--accent-2),var(--accent) 60%,#e07b00);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 6px 16px -6px var(--accent)}
+.logo svg{width:20px;height:20px}
+.logo .raio{fill:#1b1300;transform-origin:center}
+.sim .logo .raio{animation:raioLogo 2.6s ease-in-out infinite}
+@keyframes raioLogo{0%,100%{transform:scale(1)}8%{transform:scale(1.18) rotate(-6deg)}16%{transform:scale(1)}}
+.sep{width:1px;height:22px;background:var(--line-2);margin:0 5px;flex:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:36px;padding:0 13px;border:1px solid transparent;border-radius:13px;background:transparent;cursor:pointer;font-weight:650;font-size:13.5px;white-space:nowrap;flex:none;
+  transition:background .2s,border-color .2s,transform .35s var(--mola),box-shadow .3s,color .2s}
+.btn:hover{background:var(--hover)}
+.btn:active{transform:scale(.9)}
+.btn:disabled{opacity:.35;cursor:default;transform:none}
+.btn.ico{width:36px;padding:0}
+.btn.ico:hover .i{transform:scale(1.12)}
+.btn .i{transition:transform .35s var(--mola)}
+.btn.pri{background:linear-gradient(180deg,var(--accent-2),var(--accent));color:var(--accent-ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 8px 20px -8px var(--accent)}
+.btn.pri:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 10px 26px -8px var(--accent);filter:brightness(1.05)}
+.btn.suave{background:var(--field);border-color:var(--field-brd)}
+.btn.suave:hover{background:var(--field-h)}
+.btn.perigo{color:var(--err)}
+.btn.perigo:hover{background:color-mix(in srgb,var(--err) 12%,transparent)}
+.btn.mini{height:30px;width:30px;border-radius:10px}
+#zoomTxt{font-family:var(--f-mono);font-size:12px;min-width:46px;text-align:center;font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600}
+
+/* seletor de modo com "gota" deslizante */
+.seg{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:3px;border-radius:15px;background:var(--field);border:1px solid var(--field-brd);flex:none}
+.seg button{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;height:32px;padding:0 14px;border:0;background:none;cursor:pointer;font-weight:700;font-size:13px;color:var(--muted);border-radius:12px;transition:color .35s}
+.seg button[aria-selected="true"]{color:var(--ink)}
+.seg-gota{position:absolute;z-index:0;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:12px;
+  background:linear-gradient(180deg,var(--field-h),color-mix(in srgb,var(--field-h) 60%,transparent));border:1px solid var(--glass-brd);
+  box-shadow:inset 0 1px 0 var(--glass-hi),0 4px 12px -4px rgba(0,0,0,.25);transition:transform .6s var(--mola),background .4s,box-shadow .4s}
+.seg[data-m="sim"] .seg-gota{transform:translateX(100%);background:linear-gradient(180deg,var(--accent-2),var(--accent));border-color:transparent;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 0 0 0 var(--accent);animation:gotaPulsa 2.2s ease-in-out infinite}
+.seg[data-m="sim"] button[data-m="sim"]{color:var(--accent-ink)}
+@keyframes gotaPulsa{0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 0 0 0 color-mix(in srgb,var(--accent) 50%,transparent)}50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 0 18px 2px color-mix(in srgb,var(--accent) 45%,transparent)}}
+.seg button[data-m="sim"] .i{transition:transform .5s var(--mola)}
+.seg[data-m="sim"] button[data-m="sim"] .i{animation:raioLogo 2.6s ease-in-out infinite}
+
+/* ícone do tema: sol vira lua */
+.tema-ic{width:19px;height:19px;overflow:visible}
+.tema-ic .sol{fill:currentColor;stroke:none;transform-origin:12px 12px;transition:transform .6s var(--mola)}
+.tema-ic .lua-m{transition:transform .6s var(--suave)}
+.tema-ic .raios{transform-origin:12px 12px;transition:transform .6s var(--mola),opacity .4s}
+:root[data-theme="dark"] .tema-ic .sol{transform:scale(1.55)}
+:root[data-theme="dark"] .tema-ic .lua-m{transform:translate(-8px,6px)}
+:root[data-theme="dark"] .tema-ic .raios{transform:rotate(-90deg) scale(.3);opacity:0}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .tema-ic .sol{transform:scale(1.55)}
+  :root:not([data-theme="light"]) .tema-ic .lua-m{transform:translate(-8px,6px)}
+  :root:not([data-theme="light"]) .tema-ic .raios{transform:rotate(-90deg) scale(.3);opacity:0}
+}
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+
+/* ---------- painéis laterais ---------- */
+/* centralizados na vertical da tela, com folga igual em cima (barra) e embaixo (dock) */
+.painel{position:fixed;top:50%;max-height:calc(100% - 176px);transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;overflow:hidden;--r:24px;
+  transition:transform .6s var(--mola),opacity .35s,visibility .6s}
+.painel .rolagem{flex:0 1 auto}
+.gaveta{left:16px;width:256px;animation:entraEsq .8s .08s var(--mola) both}
+.ficha{right:16px;width:332px;animation:entraDir .8s .12s var(--mola) both}
+@keyframes entraEsq{from{transform:translate(-40px,-50%);opacity:0}}
+@keyframes entraDir{from{transform:translate(40px,-50%);opacity:0}}
+@keyframes entraBaixo{from{transform:translateY(40px);opacity:0}}
+.gaveta.fechado,.sim .gaveta{transform:translate(calc(-100% - 30px),-50%);opacity:0;visibility:hidden;pointer-events:none}
+.ficha.fechado{transform:translate(calc(100% + 30px),-50%);opacity:0;visibility:hidden;pointer-events:none}
+.p-cab{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 10px 8px 16px}
+.p-tit{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14.5px;letter-spacing:-.01em}
+.p-tit .i{color:var(--accent)}
+.rolagem{flex:1;min-height:0;overflow:auto;padding:4px 14px 16px;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent;
+  -webkit-mask:linear-gradient(transparent,#000 10px,#000 calc(100% - 18px),transparent);mask:linear-gradient(transparent,#000 10px,#000 calc(100% - 18px),transparent)}
+.busca{display:flex;align-items:center;gap:8px;margin:0 14px 8px;padding:0 11px;height:38px;border-radius:13px;background:var(--field);border:1px solid var(--field-brd);color:var(--muted);transition:border-color .2s,box-shadow .3s,background .2s}
+.busca:focus-within{border-color:color-mix(in srgb,var(--accent) 60%,transparent);box-shadow:0 0 0 4px var(--accent-soft);background:var(--field-h)}
+.busca input{flex:1;min-width:0;border:0;background:none;outline:none;font-size:13.5px;color:var(--ink)}
+.fab{position:fixed;z-index:19;top:50%;width:44px;height:44px;border-radius:15px;display:grid;place-items:center;cursor:pointer;color:var(--ink);--r:15px;
+  transition:transform .5s var(--mola),opacity .3s}
+.fab:hover{transform:translateY(-50%) scale(1.08)}
+.fab:active{transform:translateY(-50%) scale(.92)}
+#abrirGaveta{left:16px;transform:translateY(-50%)} #abrirFicha{right:16px;transform:translateY(-50%)}
+.sim #abrirGaveta{display:none}
+
+/* gaveta de peças */
+.grupo-p h3,.ficha h3{margin:14px 2px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:800;display:flex;align-items:center;gap:7px}
+.grupo-p:first-child h3{margin-top:4px}
+.grupo-p h3 i{width:7px;height:7px;border-radius:50%;background:var(--k);box-shadow:0 0 8px var(--k)}
+.pecas{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.peca{display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 4px 7px;border:1px solid var(--field-brd);border-radius:15px;background:var(--field);cursor:grab;text-align:center;line-height:1.15;font-size:12px;font-weight:650;user-select:none;touch-action:manipulation;
+  transition:transform .4s var(--mola),background .2s,border-color .25s,box-shadow .35s;animation:pecaEntra .55s var(--mola) both;animation-delay:calc(var(--n,0)*18ms)}
+@keyframes pecaEntra{from{opacity:0;transform:translateY(10px) scale(.94)}}
+.peca:hover{transform:translateY(-3px);background:var(--field-h);border-color:color-mix(in srgb,var(--k) 55%,transparent);box-shadow:0 12px 24px -14px var(--k)}
+.peca:active{cursor:grabbing;transform:scale(.95)}
+.peca svg{width:46px;height:40px;pointer-events:none;transition:transform .5s var(--mola)}
+.peca:hover svg{transform:scale(1.1) rotate(-3deg)}
+.peca small{font-family:var(--f-mono);font-size:9.5px;color:var(--faint);font-weight:500}
+.nada{color:var(--muted);font-size:13px;text-align:center;padding:20px 6px}
+
+/* ---------- docks inferiores ---------- */
+/* sempre no centro da tela, independente dos painéis laterais */
+.dock{position:fixed;bottom:16px;left:0;right:0;margin-inline:auto;width:fit-content;max-width:calc(100vw - 32px);z-index:25;
+  display:flex;align-items:center;flex-wrap:wrap;justify-content:center;gap:6px 10px;padding:8px 10px;--r:22px;
+  transition:transform .65s var(--mola),opacity .35s,visibility .65s}
+body:not(.sim) #dockEnergia,.sim #dockFio{transform:translateY(calc(100% + 40px)) scale(.9);opacity:0;visibility:hidden;pointer-events:none}
+.dock-rot{display:inline-flex;align-items:center;gap:6px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:800;padding-left:4px}
+.sws{display:flex;gap:5px;flex-wrap:wrap}
+.sw{width:24px;height:24px;border-radius:50%;border:2px solid var(--glass-brd);background:var(--c);cursor:pointer;padding:0;flex:none;
+  box-shadow:inset 0 -3px 5px rgba(0,0,0,.22),inset 0 2px 3px rgba(255,255,255,.35),0 2px 6px -2px rgba(0,0,0,.4);transition:transform .35s var(--mola),box-shadow .25s}
+.sw:hover{transform:scale(1.2) translateY(-2px)}
+.sw.vdam{background:repeating-linear-gradient(135deg,#22a052 0 5px,#f2cc0c 5px 10px)}
+.sw.ativo{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ink),inset 0 -3px 5px rgba(0,0,0,.22);transform:scale(1.08)}
+.cor-custom{position:relative;width:26px;height:26px;border-radius:50%;overflow:hidden;cursor:pointer;flex:none;background:conic-gradient(red,#ff0,lime,cyan,blue,#f0f,red);box-shadow:0 0 0 2px var(--glass-brd)}
+.cor-custom input{position:absolute;inset:-8px;opacity:0;cursor:pointer}
+select,.campo input[type=text],.campo input[type=number],.num{height:34px;padding:0 10px;border:1px solid var(--field-brd);border-radius:11px;background:var(--field);outline:none;transition:border-color .2s,box-shadow .3s}
+select:focus,.campo input:focus,.num:focus{border-color:color-mix(in srgb,var(--accent) 60%,transparent);box-shadow:0 0 0 4px var(--accent-soft)}
+select option{background:var(--board);color:var(--ink)}
+.num{width:76px;font-family:var(--f-mono);font-size:12.5px;font-variant-numeric:tabular-nums}
+.unid{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+/* interruptor (toggle) estilo vidro */
+.tgl{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:650;color:var(--muted);cursor:pointer;user-select:none;white-space:nowrap}
+.tgl input{position:absolute;opacity:0;pointer-events:none}
+.tgl-t{position:relative;width:38px;height:22px;border-radius:99px;background:var(--line-2);flex:none;transition:background .3s;box-shadow:inset 0 1px 3px rgba(0,0,0,.25)}
+.tgl-t::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.35);transition:transform .45s var(--mola),width .25s}
+.tgl:active .tgl-t::after{width:23px}
+.tgl input:checked+.tgl-t{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+.tgl input:checked+.tgl-t::after{transform:translateX(16px)}
+.tgl:active input:checked+.tgl-t::after{transform:translateX(11px)}
+.tgl input:focus-visible+.tgl-t{outline:2px solid var(--sel);outline-offset:2px}
+
+/* dock de energia */
+.chave-geral{display:flex;align-items:center;gap:10px;padding:4px 12px 4px 4px;border-radius:17px;border:1px solid var(--field-brd);background:var(--field);cursor:pointer;transition:background .3s,border-color .3s,transform .35s var(--mola)}
+.chave-geral:active{transform:scale(.95)}
+.cg-trilho{position:relative;width:62px;height:36px;border-radius:13px;background:linear-gradient(180deg,#3a1414,#5a1d1d);box-shadow:inset 0 2px 6px rgba(0,0,0,.5);transition:background .4s;flex:none}
+.cg-knob{position:absolute;top:3px;left:3px;width:30px;height:30px;border-radius:10px;display:grid;place-items:center;color:#ff6b6b;
+  background:linear-gradient(180deg,#f4f4f2,#cfcfcb);box-shadow:inset 0 1px 0 #fff,0 4px 10px rgba(0,0,0,.45);transition:transform .55s var(--mola),color .3s}
+.cg-knob .i{width:16px;height:16px;stroke-width:2.4}
+.chave-geral.on .cg-trilho{background:linear-gradient(180deg,#5a3c00,#a86b00);box-shadow:inset 0 2px 6px rgba(0,0,0,.4),0 0 18px -2px var(--accent)}
+.chave-geral.on .cg-knob{transform:translateX(26px);color:#e08800}
+.chave-geral.on{border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.chave-geral:not(.on) .cg-trilho{animation:alertaTrilho 1.6s ease-in-out infinite}
+@keyframes alertaTrilho{50%{box-shadow:inset 0 2px 6px rgba(0,0,0,.5),0 0 16px -2px var(--err)}}
+.cg-txt{display:flex;flex-direction:column;text-align:left;line-height:1.15}
+.cg-txt b{font-size:13px;font-weight:800;white-space:nowrap}
+.cg-txt small{font-size:11px;color:var(--muted);font-weight:600}
+.chave-geral:disabled{opacity:.5;cursor:not-allowed}
+.osc{position:relative;width:156px;height:46px;border-radius:13px;overflow:hidden;background:#0b0c0b;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),inset 0 6px 16px rgba(0,0,0,.6);flex:none}
+.osc canvas{width:100%;height:100%;display:block}
+.osc-off{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:10px;font-weight:700;letter-spacing:.18em;color:#ff5a5f;opacity:0;pointer-events:none}
+.sem-tensao .osc-off{opacity:1;animation:piscaTexto 1.1s steps(2) infinite}
+@keyframes piscaTexto{50%{opacity:.25}}
+.leitura{display:flex;flex-direction:column;justify-content:center;min-width:0;padding:3px 8px;border-radius:13px;border:1px solid transparent;transition:background .3s,border-color .3s}
+.leitura small{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;white-space:nowrap}
+.leitura b{font-family:var(--f-mono);font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;white-space:nowrap;display:flex;align-items:baseline;gap:3px}
+.leitura b i{font-style:normal;font-size:11px;color:var(--muted);font-weight:600}
+.leitura.fase b{color:var(--e-fase)} .leitura.neutro b{color:var(--e-neutro)}
+.leitura.pulsa{animation:pulsaLeitura .7s var(--suave)}
+@keyframes pulsaLeitura{0%{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 40%,transparent);transform:scale(1.06)}100%{transform:scale(1)}}
+.sem-tensao .leitura b{color:var(--faint)}
+.rede-sel{display:flex;flex-direction:column;gap:2px}
+.rede-sel small{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800}
+.rede-sel select{height:30px;font-size:12.5px;font-weight:700}
+
+/* ---------- ficha ---------- */
+.ficha section{animation:secEntra .5s var(--suave) both}
+.ficha section:nth-child(2){animation-delay:.04s} .ficha section:nth-child(3){animation-delay:.08s} .ficha section:nth-child(4){animation-delay:.12s}
+@keyframes secEntra{from{opacity:0;transform:translateY(8px)}}
+.ficha section+section{border-top:1px solid var(--line);margin-top:14px;padding-top:2px}
+.ficha p{margin:4px 2px;line-height:1.45;font-size:13.5px}
+.ficha .muted{color:var(--muted)}
+.nome{font-size:16.5px;font-weight:800;margin:2px 2px 0;letter-spacing:-.01em}
+.campo{display:flex;flex-direction:column;gap:5px;margin:10px 2px}
+.campo-l{display:flex;gap:8px}
+.campo-l .campo{flex:1;min-width:0}
+.rot{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:800}
+.acoes{display:flex;flex-wrap:wrap;gap:6px;margin:10px 2px}
+.tabela{width:100%;border-collapse:collapse;font-size:12.5px}
+.tabela td{padding:6px 2px;border-bottom:1px solid var(--line);vertical-align:top}
+.tabela td:last-child{text-align:right;font-family:var(--f-mono);font-size:11.5px;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted)}
+.bolinha{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c);margin-right:7px;vertical-align:-1px;box-shadow:0 0 0 1px var(--casca)}
+.bolinha.vdam{background:repeating-linear-gradient(135deg,#22a052 0 3px,#f2cc0c 3px 6px)}
+.alerta{display:flex;gap:9px;align-items:flex-start;padding:9px 10px;border-radius:13px;background:color-mix(in srgb,var(--nc) 8%,transparent);border:1px solid color-mix(in srgb,var(--nc) 22%,transparent);margin:6px 0;font-size:12.5px;line-height:1.4;cursor:pointer;transition:transform .35s var(--mola),background .2s}
+.alerta:hover{transform:translateX(3px);background:color-mix(in srgb,var(--nc) 13%,transparent)}
+.alerta b{font-family:var(--f-mono);font-size:9.5px;text-transform:uppercase;color:var(--nc);flex:none;margin-top:2px;letter-spacing:.06em}
+.ok{color:var(--ok);font-weight:700;display:flex;align-items:center;gap:7px}
+.ok .i{width:16px;height:16px}
+.lista-dica{margin:4px 2px;padding-left:0;list-style:none;font-size:13px;line-height:1.5;color:var(--muted);counter-reset:d}
+.lista-dica li{position:relative;padding:5px 0 5px 32px;counter-increment:d}
+.lista-dica li::before{content:counter(d);position:absolute;left:0;top:5px;width:22px;height:22px;border-radius:8px;display:grid;place-items:center;font-size:11px;font-weight:800;background:var(--accent-soft);color:var(--accent)}
+.lista-dica b{color:var(--ink);font-weight:700}
+.terms{display:flex;flex-direction:column;gap:5px;margin:4px 2px}
+.trow,.thead{display:grid;grid-template-columns:10px minmax(0,1fr) 92px 62px 26px;gap:5px;align-items:center}
+.trow input,.trow select{min-width:0;width:100%;height:30px;padding:0 6px;border:1px solid var(--field-brd);border-radius:9px;background:var(--field);font-size:12.5px;outline:none}
+.trow input{font-family:var(--f-mono);font-size:11.5px}
+.tDel{display:grid;place-items:center;width:26px;height:26px;border:none;border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;padding:0;transition:background .2s,color .2s,transform .3s var(--mola)}
+.tDel:hover{background:color-mix(in srgb,var(--err) 14%,transparent);color:var(--err);transform:scale(1.1)}
+.tDel .i{width:15px;height:15px}
+.tdot{width:10px;height:10px;border-radius:50%;border:2px solid var(--tc)}
+.tdot.lig{background:var(--tc);box-shadow:0 0 6px var(--tc)}
+.thead{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;margin:8px 2px 0}
+.exemplo{font-size:12.5px;background:var(--accent-soft);border-radius:12px;padding:9px 11px;margin:6px 2px;line-height:1.45}
+
+/* ficha no modo energizar */
+.card-e{background:var(--field);border:1px solid var(--field-brd);border-radius:18px;padding:12px;margin-top:4px}
+.ce-top{display:flex;gap:11px;align-items:center}
+.ce-ic{width:52px;height:52px;border-radius:15px;background:var(--node);border:1px solid var(--node-line);display:grid;place-items:center;flex:none;box-shadow:0 6px 14px -8px rgba(0,0,0,.4)}
+.ce-ic svg{width:44px;height:44px}
+.pill{display:inline-flex;align-items:center;gap:6px;margin-top:4px;padding:3px 9px 3px 7px;border-radius:99px;font-size:11.5px;font-weight:800;background:color-mix(in srgb,var(--pc) 14%,transparent);color:var(--pc)}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--pc);box-shadow:0 0 8px var(--pc)}
+.pill.on{--pc:var(--ok)} .pill.off{--pc:var(--faint)} .pill.erro{--pc:var(--err)} .pill.on::before{animation:pontoVivo 1.4s ease-in-out infinite}
+.pill.erro::before{animation:pontoVivo .5s ease-in-out infinite}
+@keyframes pontoVivo{50%{transform:scale(1.5);opacity:.6}}
+.medidas{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:12px 0 4px}
+.medidas div{background:var(--node);border:1px solid var(--node-line);border-radius:12px;padding:7px 9px}
+.medidas small{display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800}
+.medidas b{font-family:var(--f-mono);font-size:14px;font-variant-numeric:tabular-nums;font-weight:700}
+.btn.grande{width:100%;height:44px;border-radius:14px;font-size:14px;margin-top:8px}
+.btn.grande.on{background:linear-gradient(180deg,#ff7a7d,var(--err));color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 8px 20px -8px var(--err)}
+.teclas{display:grid;grid-template-columns:repeat(auto-fit,minmax(60px,1fr));gap:6px;margin-top:8px}
+.tecla-b{height:58px;border-radius:14px;border:1px solid var(--field-brd);background:var(--node);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-weight:800;font-size:11.5px;transition:transform .35s var(--mola),background .3s,box-shadow .3s}
+.tecla-b:active{transform:scale(.92)}
+.tecla-b i{width:22px;height:5px;border-radius:3px;background:var(--line-2);transition:background .3s,box-shadow .3s,transform .45s var(--mola);transform:translateY(5px)}
+.tecla-b.on{background:color-mix(in srgb,var(--accent) 12%,var(--node));border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.tecla-b.on i{background:var(--accent);box-shadow:0 0 10px var(--accent);transform:translateY(-3px)}
+input[type=range]{width:100%;accent-color:var(--accent);height:22px}
+.linha-e{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:8px 9px;border-radius:13px;cursor:pointer;transition:background .2s,transform .35s var(--mola)}
+.linha-e:hover{background:var(--hover);transform:translateX(2px)}
+.linha-e:active{transform:scale(.98)}
+.le-txt{min-width:0}
+.le-txt b{display:block;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.le-txt small{display:block;font-size:11.5px;color:var(--muted);font-family:var(--f-mono)}
+.le-v{font-family:var(--f-mono);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+.barra-i{grid-column:2/4;height:5px;border-radius:9px;background:var(--line);overflow:hidden;margin-top:-2px}
+.barra-i i{display:block;height:100%;border-radius:inherit;background:var(--bc,var(--ok));width:0;transition:width .8s var(--suave),background .4s;box-shadow:0 0 10px var(--bc,var(--ok))}
+.mini-tgl{width:30px;height:18px;border-radius:99px;background:var(--line-2);position:relative;flex:none;transition:background .3s}
+.mini-tgl::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.35);transition:transform .45s var(--mola)}
+.mini-tgl.on{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+.mini-tgl.on::after{transform:translateX(12px)}
+.mini-tgl.erro{background:var(--err);animation:pontoVivo .6s ease-in-out infinite}
+.lampada-p{width:12px;height:12px;border-radius:50%;background:var(--line-2);flex:none;margin:0 9px;transition:background .4s,box-shadow .4s}
+.linha-e.on .lampada-p{background:var(--e-fase);box-shadow:0 0 12px 2px var(--e-fase);animation:pontoVivo 2s ease-in-out infinite}
+.vazio-e{text-align:center;padding:14px 6px 6px}
+.vazio-e .grande-ic{width:64px;height:64px;margin:0 auto 6px;border-radius:20px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);animation:flutua 2.4s ease-in-out infinite}
+.vazio-e .grande-ic .i{width:32px;height:32px}
+@keyframes flutua{50%{transform:translateY(-5px)}}
+
+/* ---------- popover, modal, toast, dica ao vivo ---------- */
+.pop{position:fixed;z-index:40;top:76px;width:300px;padding:14px 16px;--r:20px;transform-origin:top right;animation:popEntra .45s var(--mola)}
+@keyframes popEntra{from{opacity:0;transform:translateY(-8px) scale(.94)}}
+.pop h4{margin:12px 0 6px;font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:800}
+.pop h4:first-child{margin-top:0}
+.pop .linha{display:flex;align-items:center;gap:6px}
+.pop select{width:100%}
+.fundo-modal{position:fixed;inset:0;background:rgba(0,0,0,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px;z-index:50;animation:fundoEntra .3s ease}
+@keyframes fundoEntra{from{opacity:0}}
+.caixa{padding:20px;width:min(620px,100%);display:flex;flex-direction:column;gap:12px;max-height:90%;overflow:auto;--r:26px;animation:caixaEntra .55s var(--mola)}
+@keyframes caixaEntra{from{opacity:0;transform:translateY(16px) scale(.95)}}
+.caixa h2{margin:0;font-size:19px;font-weight:800;letter-spacing:-.01em}
+.caixa p{margin:0;font-size:13.5px;color:var(--muted)}
+.caixa textarea{width:100%;min-height:160px;margin-top:8px;font-family:var(--f-mono);font-size:12px;border:1px solid var(--field-brd);border-radius:14px;background:var(--field);padding:10px;resize:vertical;outline:none}
+.formatos{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
+.fmt{display:flex;flex-direction:column;gap:4px;text-align:left;padding:12px 14px;border:1px solid var(--field-brd);border-radius:16px;background:var(--field);cursor:pointer;transition:transform .35s var(--mola),border-color .2s,background .2s}
+.fmt:hover{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-2px)}
+.fmt .i{color:var(--accent);width:22px;height:22px;margin-bottom:2px}
+.fmt b{font-size:14.5px}
+.fmt span{font-size:12px;color:var(--muted);line-height:1.35}
+.fmt:disabled{opacity:.5;cursor:progress}
+.caixa details summary{cursor:pointer;font-size:13px;color:var(--muted);font-weight:650}
+.atalhos td:first-child{font-size:13px}
+kbd{font-family:var(--f-mono);font-size:11px;border:1px solid var(--line-2);border-bottom-width:2px;border-radius:6px;padding:1px 5px;background:var(--field)}
+#toast{position:fixed;left:50%;top:78px;transform:translateX(-50%);z-index:60;padding:10px 16px;font-size:13.5px;font-weight:650;max-width:calc(100% - 32px);--r:16px;display:flex;align-items:center;gap:8px;animation:toastEntra .5s var(--mola)}
+#toast.erro{color:var(--err)}
+@keyframes toastEntra{from{opacity:0;transform:translate(-50%,-12px) scale(.9)}}
+.tip{position:fixed;z-index:45;pointer-events:none;padding:9px 12px;--r:14px;font-size:12.5px;max-width:260px;line-height:1.4}
+.tip b{font-weight:800;display:block;font-size:13px}
+.tip .v{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.tip .v.vivo{color:var(--e-fase)} .tip .v.morto{color:var(--err)}
+
+/* ---------- SVG: quadro e componentes ---------- */
+.q-fundo{fill:var(--board);filter:drop-shadow(0 18px 40px rgba(0,0,0,.18))}
+.q-borda{fill:none;stroke:var(--line-2);stroke-width:1.2}
+.gm{fill:none;stroke:var(--grid);stroke-width:.6}
+.gM{fill:none;stroke:var(--grid-major);stroke-width:1}
+.regua line{stroke:var(--ruler);stroke-width:1}
+.regua text,.q-dim{fill:var(--ruler);font-family:var(--f-mono);font-size:10px}
+.q-dim{font-size:11.5px}
+.no{cursor:move}
+.no .corpo{fill:var(--node);stroke:var(--node-line);stroke-width:1.2;transition:stroke .4s}
+.no .sombra{fill:rgba(0,0,0,.12);filter:blur(5px)}
+.no.wago .corpo{fill:color-mix(in srgb,var(--node) 72%,transparent);stroke-dasharray:3 2}
+.no .cab{fill:var(--node-head)}
+.no .faixa{fill:var(--k)}
+.no .cab-t{fill:var(--node-ink);font-family:var(--f-ui);font-weight:750;font-size:11px}
+.rotulo-m{fill:var(--muted);font-family:var(--f-ui);font-weight:700;font-size:11.5px;pointer-events:none}
+.no.sel .corpo{stroke:var(--sel);stroke-width:2.2}
+.ic{fill:none;stroke:var(--node-ink);stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round}
+.ic-fino{stroke-width:1}
+.ic-f{fill:var(--node-ink);stroke:none}
+.ic-a{fill:var(--k);stroke:none}
+.ic-s{fill:color-mix(in srgb,var(--k) 15%,transparent);stroke:var(--k);stroke-width:1.3}
+.ic-t{fill:var(--node-ink);font-family:var(--f-mono);font-size:7.5px;font-weight:600}
+.ic-plate{fill:var(--node-head);stroke:var(--node-line);stroke-width:1.2}
+.ic-plate-in{fill:none;stroke:var(--node-line);stroke-width:.8}
+.ic-screw{fill:var(--node);stroke:var(--node-line);stroke-width:1}
+.ic-badge{fill:var(--k)} .ic-badge-i{fill:none;stroke:#fff;stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round}
+.term{cursor:crosshair}
+.term .hit{fill:transparent}
+.term .dot{fill:var(--node);stroke:var(--tc);stroke-width:2.4;transition:transform .2s var(--mola);transform-box:fill-box;transform-origin:center}
+.term.lig .dot{fill:var(--tc)}
+.term:hover .dot,.term.alvo .dot,.term.origem .dot{transform:scale(1.6)}
+.sim .term{cursor:inherit}
+.sim .term.viva .dot{fill:var(--e-fase);stroke:var(--e-fase);animation:termViva 1.6s ease-in-out infinite}
+@keyframes termViva{50%{transform:scale(1.45)}}
+.term-t{fill:var(--node-ink);font-family:var(--f-mono);font-size:9px;font-weight:600;pointer-events:none}
+.ligando .term .dot{stroke-width:3}
+.fio{cursor:pointer}
+.fio .hit{stroke:transparent;stroke-width:14;fill:none}
+.fio .casca{stroke:var(--casca);fill:none;stroke-linecap:round;transition:opacity .5s}
+.fio .nucleo,.fio .listra{fill:none;stroke-linecap:round;transition:opacity .6s}
+.fio:hover .casca,.fio.sel .casca{stroke:var(--sel)}
+#temp{fill:none;stroke-width:3.2;stroke-dasharray:7 5;pointer-events:none;stroke-linecap:round;animation:fantasma .6s linear infinite reverse}
+#laco{fill:color-mix(in srgb,var(--sel) 10%,transparent);stroke:var(--sel);stroke-dasharray:4 3;pointer-events:none;rx:4}
+
+/* ---------- SVG: estados da simulação ---------- */
+.sim .no{cursor:default}
+.sim .no.acionavel{cursor:pointer}
+.sim .no.acionavel:hover .corpo{stroke:var(--accent);stroke-width:1.8}
+.no.aceso .corpo{stroke:color-mix(in srgb,var(--e-fase) 75%,var(--node-line));stroke-width:1.6}
+.no.disparou .no-in{animation:tremerNo .6s cubic-bezier(.36,.07,.19,.97)}
+@keyframes tremerNo{10%,90%{transform:translateX(-1px)}20%,80%{transform:translateX(2px)}30%,50%,70%{transform:translateX(-4px)}40%,60%{transform:translateX(4px)}}
+.sim .no.desarmado .corpo{stroke:var(--err);stroke-width:1.8;stroke-dasharray:5 4;animation:cascaMorta 1s linear infinite}
+.no.sobre .corpo{animation:sobre .35s ease-in-out infinite alternate}
+@keyframes sobre{to{stroke:var(--err);stroke-width:3}}
+.sim .no.mudou .corpo{animation:corpoClique .5s var(--suave)}
+@keyframes corpoClique{0%{stroke:var(--accent);stroke-width:3.5}}
+/* fios */
+.sim .fio.morta .nucleo,.sim .fio.morta .listra{opacity:.2}
+.sim .fio.morta .casca{opacity:.55;stroke-dasharray:3 5;animation:cascaMorta 1.4s linear infinite}
+@keyframes cascaMorta{to{stroke-dashoffset:-16}}
+.sim .fio.neutra:not(.flui) .nucleo{opacity:.55}
+.e-ghost{fill:none;stroke:var(--e-morto);stroke-linecap:round;stroke-dasharray:1 11;pointer-events:none;animation:fantasma 3s linear infinite,respira 2.2s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes fantasma{to{stroke-dashoffset:24}}
+@keyframes respira{0%,100%{opacity:.8}50%{opacity:.12}}
+.e-glow{fill:none;stroke:var(--e-fase);stroke-linecap:round;pointer-events:none;opacity:.2;animation:brilhoFio 1.8s ease-in-out infinite}
+.fio.neutra .e-glow{stroke:var(--e-neutro)}
+@keyframes brilhoFio{50%{opacity:.42}}
+.e-flux{fill:none;stroke:var(--e-dot);stroke-linecap:round;stroke-dasharray:0 14;pointer-events:none;animation:fluxo var(--dur,1s) linear infinite}
+.fio.rev .e-flux{animation-direction:reverse}
+.fio.neutra .e-flux{stroke:#d4f0ff}
+@keyframes fluxo{to{stroke-dashoffset:-28}}
+.e-tensao{fill:none;stroke:var(--e-fase);stroke-linecap:round;stroke-dasharray:2 16;pointer-events:none;animation:tensao 2.2s ease-in-out infinite}
+@keyframes tensao{0%,100%{opacity:.12}50%{opacity:.8}}
+.e-surto{fill:none;stroke:#fff4c7;stroke-linecap:round;stroke-dasharray:22 100;pointer-events:none;animation:surto 1s var(--suave) forwards;filter:drop-shadow(0 0 4px var(--e-fase))}
+.fio.rev .e-surto{animation-name:surtoR}
+@keyframes surto{from{stroke-dashoffset:22;opacity:1}90%{opacity:1}to{stroke-dashoffset:-100;opacity:0}}
+@keyframes surtoR{from{stroke-dashoffset:-100;opacity:1}90%{opacity:1}to{stroke-dashoffset:22;opacity:0}}
+.e-dreno{fill:none;stroke:var(--e-fase);stroke-linecap:round;stroke-dasharray:100 100;pointer-events:none;animation:dreno 1.1s cubic-bezier(.6,0,.4,1) forwards}
+.fio.rev .e-dreno{animation-name:drenoR}
+@keyframes dreno{from{stroke-dashoffset:0;opacity:1}to{stroke-dashoffset:-100;opacity:.15}}
+@keyframes drenoR{from{stroke-dashoffset:0;opacity:1}to{stroke-dashoffset:100;opacity:.15}}
+.fio.apagou .casca{animation:cascaApaga 1.2s ease-out}
+@keyframes cascaApaga{0%,30%{stroke:var(--err);opacity:1}}
+/* marcador de fio sem energia */
+.morto{pointer-events:none}
+.morto-b{animation:boia 2.2s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes boia{50%{transform:translateY(-4px)}}
+.morto-bg{fill:var(--node);stroke:color-mix(in srgb,var(--err) 70%,transparent);stroke-width:1.4}
+.morto-anel{fill:none;stroke:var(--err);stroke-width:1.5;animation:anel 1.8s ease-out infinite;animation-delay:var(--d,0s)}
+@keyframes anel{0%{transform:scale(.9);opacity:.9}100%{transform:scale(2.1);opacity:0}}
+.morto-ic{fill:var(--e-morto)}
+.morto-x{stroke:var(--err);stroke-width:1.8;stroke-linecap:round;stroke-dasharray:18;animation:risca 2.2s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes risca{0%,15%{stroke-dashoffset:18}45%,85%{stroke-dashoffset:0}100%{stroke-dashoffset:-18}}
+/* etiquetas de leitura */
+.chip{pointer-events:none;animation:chipEntra .5s var(--mola) both}
+@keyframes chipEntra{from{opacity:0;transform:scale(.6)}}
+.chip rect{fill:var(--node);stroke:var(--node-line);stroke-width:1}
+.chip text{font-family:var(--f-mono);font-size:9.5px;font-weight:700;fill:var(--node-ink)}
+.chip.vivo rect{fill:color-mix(in srgb,var(--e-fase) 16%,var(--node));stroke:color-mix(in srgb,var(--e-fase) 60%,transparent)}
+.chip.vivo text{fill:color-mix(in srgb,var(--e-fase) 70%,var(--node-ink))}
+.chip.n rect{fill:color-mix(in srgb,var(--e-neutro) 14%,var(--node));stroke:color-mix(in srgb,var(--e-neutro) 55%,transparent)}
+.chip.n text{fill:var(--e-neutro)}
+.chip.erro rect{fill:color-mix(in srgb,var(--err) 14%,var(--node));stroke:var(--err);animation:sobre .6s ease-in-out infinite alternate}
+.chip.erro text{fill:var(--err)}
+.chip.off text{fill:var(--muted)}
+/* luz das lâmpadas */
+.halo{mix-blend-mode:var(--halo-blend);opacity:var(--halo-op);pointer-events:none;animation:haloRespira 3.4s ease-in-out infinite}
+.halo.acendeu{animation:haloAcende 1s ease-out,haloRespira 3.4s ease-in-out 1s infinite}
+@keyframes haloAcende{0%{opacity:0;transform:scale(.2)}12%{opacity:var(--halo-op)}22%{opacity:.15}36%{opacity:var(--halo-op);transform:scale(1.18)}48%{opacity:.4}100%{transform:scale(1)}}
+@keyframes haloRespira{50%{transform:scale(1.05)}}
+/* fx */
+.fx-onda{fill:none;stroke:var(--accent);stroke-width:2;animation:fxOnda .6s var(--suave) forwards;pointer-events:none}
+@keyframes fxOnda{from{transform:scale(.2);opacity:1}to{transform:scale(1);opacity:0}}
+.fx-flash{fill:url(#gFlash);pointer-events:none;animation:fxFlash .7s ease-out forwards}
+@keyframes fxFlash{0%{transform:scale(.1);opacity:1}100%{transform:scale(1.4);opacity:0}}
+.faisca{stroke:#ffe9a3;stroke-width:2;stroke-linecap:round;pointer-events:none;animation:faisca .65s cubic-bezier(.2,.7,.3,1) forwards;filter:drop-shadow(0 0 3px #ff9f0a)}
+@keyframes faisca{0%{transform:translate(0,0);opacity:1}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
+
+/* ícones animados dos componentes */
+.tk-face{fill:var(--node);stroke:var(--node-line);stroke-width:1;transition:fill .3s}
+.tk.on .tk-face{fill:color-mix(in srgb,var(--k) 16%,var(--node))}
+.tk-bar{fill:var(--node-line);transform:translateY(6px)}
+.tk.on .tk-bar{fill:var(--k);transform:translateY(-6px)}
+.tk.mudou.on .tk-bar{animation:barSobe .55s var(--mola)}
+.tk.mudou:not(.on) .tk-bar{animation:barDesce .55s var(--mola)}
+@keyframes barSobe{from{transform:translateY(6px)}}
+@keyframes barDesce{from{transform:translateY(-6px)}}
+.tk.mudou .tk-face{animation:teclaFlash .5s ease-out}
+@keyframes teclaFlash{0%{fill:color-mix(in srgb,var(--accent) 45%,var(--node))}}
+.tk-led{fill:var(--node-line);transition:fill .3s}
+.tk.on .tk-led{fill:#22d39a}
+.sim .tk-led{animation:none}
+.sim .tk.on .tk-led{animation:ledVivo 1.6s ease-in-out infinite}
+@keyframes ledVivo{50%{opacity:.45}}
+/* interruptor inteligente: LED de espera e Wi-Fi transmitindo enquanto alimentado */
+.sim .tk.espera .tk-led{fill:#5c9dff;animation:ledVivo 2.4s ease-in-out infinite}
+.wf-p{fill:#fff}
+.wf-x{stroke:#fff;stroke-width:1.3;stroke-linecap:round;opacity:0}
+.wf-anel{fill:none;stroke:var(--k);stroke-width:1.2;opacity:0;transform-box:fill-box;transform-origin:center}
+.wf.on .ic-badge{animation:wfBadge 2.4s ease-in-out infinite}
+.wf.on .wf-anel{animation:wfAnel 2.4s ease-out infinite}
+.wf.on .wf-anel.d2{animation-delay:1.2s}
+.wf.on .wf-p,.wf.on .wf-a1,.wf.on .wf-a2{animation:wfArco 1.6s ease-in-out infinite}
+.wf.on .wf-a1{animation-delay:.18s} .wf.on .wf-a2{animation-delay:.36s}
+.wf.off .ic-badge{fill:var(--faint)}
+.wf.off .wf-a1,.wf.off .wf-a2{opacity:.35}
+.wf.off .wf-x{opacity:1}
+@keyframes wfAnel{0%{transform:scale(1);opacity:.85}100%{transform:scale(2.6);opacity:0}}
+@keyframes wfArco{0%,15%{opacity:.25}35%,80%{opacity:1}100%{opacity:.25}}
+@keyframes wfBadge{50%{filter:drop-shadow(0 0 3px var(--k))}}
+.sim .tk{cursor:pointer}
+.sim .tk:hover .tk-face{stroke:var(--accent)}
+.dj-body{fill:var(--node);stroke:var(--node-line);stroke-width:1.1}
+.dj-slot{fill:var(--node-head);stroke:var(--node-line);stroke-width:.8}
+.dj-lev rect{fill:var(--k);stroke:color-mix(in srgb,var(--k) 55%,#000);stroke-width:.8}
+.dj-lev{transform:translateY(5px)}
+.ico.ligado .dj-lev{transform:translateY(-5px)}
+.ico.mudou.ligado .dj-lev{animation:levSobe .55s var(--mola)}
+.ico.mudou:not(.ligado) .dj-lev{animation:levDesce .5s cubic-bezier(.5,-.6,.3,1.5)}
+@keyframes levSobe{from{transform:translateY(5px)}}
+@keyframes levDesce{from{transform:translateY(-5px)}}
+.dj-win{fill:#22c55e;transition:fill .3s}
+.ico.ligado .dj-win{fill:#ef4444}
+.ico.disparou .dj-win{animation:piscaWin .18s 6 steps(2)}
+@keyframes piscaWin{50%{fill:#fff}}
+.md-box{fill:var(--node-head);stroke:var(--node-line);stroke-width:1.2}
+.md-disp{fill:#0d1510;stroke:#26352b;stroke-width:1}
+.md-txt{fill:#4ade80;font-family:var(--f-mono);font-size:7.5px;font-weight:700}
+.ico.desligado .md-txt{fill:#2f4a38}
+.sim .ico.ligado .md-txt{animation:ledVivo 2.2s ease-in-out infinite}
+.md-disco{fill:none;stroke:var(--k);stroke-width:1.3;stroke-dasharray:3 2.5}
+.sim .ico.ligado .md-disco{animation:gira 2.8s linear infinite}
+.lp-vidro{fill:color-mix(in srgb,var(--k) 9%,transparent);stroke:var(--node-ink);stroke-width:1.45;transition:fill .4s,stroke .4s}
+.lp-fil{fill:none;stroke:var(--node-ink);stroke-width:1.1;opacity:.75}
+.lp-raios line{stroke:var(--k);stroke-width:1.5;stroke-linecap:round;opacity:.6}
+.sim .lp:not(.on) .lp-raios line{opacity:0}
+.lp.on .lp-vidro{fill:url(#gBulbo);stroke:#f59e0b}
+.lp.on .lp-fil{stroke:#fff8d6;opacity:1}
+.lp.on .lp-raios{animation:raios 2.4s ease-in-out infinite}
+.lp.on .lp-raios line{opacity:1;stroke:#ffb020}
+@keyframes raios{50%{transform:scale(1.2) rotate(10deg)}}
+.lp.acendeu{animation:acende .8s linear}
+@keyframes acende{0%{opacity:.25}8%{opacity:1}16%{opacity:.35}30%{opacity:1}40%{opacity:.55}55%,100%{opacity:1}}
+.lp.apagou .lp-fil{animation:brasa 1.5s ease-out}
+@keyframes brasa{0%{stroke:#ff7a00;opacity:1;stroke-width:2}100%{stroke:var(--node-ink);opacity:.75}}
+.led-d{fill:var(--k);opacity:.6}
+.lp.on .led-d{fill:#ffe08a;opacity:1;animation:perseguir 1.1s ease-in-out infinite;animation-delay:calc(var(--i)*.13s)}
+@keyframes perseguir{50%{fill:#fff;opacity:.55}}
+.pas{fill:var(--k);opacity:.9}
+.pas.gira{animation:gira .45s linear infinite}
+.pas.gira.partiu{animation:giraIni 1.4s cubic-bezier(.5,0,1,1),gira .45s linear 1.4s infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+@keyframes giraIni{to{transform:rotate(540deg)}}
+.sino.on{animation:sino .16s ease-in-out infinite alternate}
+@keyframes sino{from{transform:rotate(-14deg)}to{transform:rotate(14deg)}}
+.ondas path{opacity:0}
+.on>.ondas path,.on .ondas path{animation:ondas 1.4s ease-out infinite}
+.ondas path:nth-child(2){animation-delay:.35s!important}
+@keyframes ondas{0%{opacity:0;transform:scale(.6)}30%{opacity:1}100%{opacity:0;transform:scale(1.35)}}
+.tom-anel{fill:none;stroke:var(--node-ink);stroke-width:1.45}
+.tom.on .tom-anel{stroke:var(--e-fase);animation:brilhoTom 1.6s ease-in-out infinite}
+@keyframes brilhoTom{50%{stroke-width:3}}
+.tom-face{fill:var(--node-head);stroke:var(--node-line);stroke-width:1}
+.bt-c{fill:var(--k);transition:transform .2s}
+.ico.ligado .bt-c{transform:scale(.78);fill:color-mix(in srgb,var(--k) 70%,#fff)}
+.dim-arc{fill:none;stroke:var(--k);stroke-width:2.2;stroke-linecap:round}
+.dim-trilho{fill:none;stroke:var(--node-line);stroke-width:2.2;stroke-linecap:round}
+.ico.desligado .dim-arc{opacity:.35}
+.rl-cont{transition:transform .3s}
+@media (max-width:900px){
+  .painel{top:auto;bottom:14px;left:12px!important;right:12px!important;width:auto!important;height:min(62vh,560px);max-height:none;transform:none;animation-name:entraBaixo}
+  .painel .rolagem{flex:1 1 auto}
+  .gaveta.fechado,.sim .gaveta{transform:translateY(calc(100% + 30px))}
+  .ficha.fechado{transform:translateY(calc(100% + 30px))}
+  .marca span:last-child,.seg button span,#bArquivo span{display:none}
+  #abrirGaveta,#abrirFicha{top:auto;bottom:90px;transform:none}
+  .fab:hover,.fab:active{transform:none}
+  .barra{top:10px}
+  .osc{display:none}
+  .leitura{min-width:70px}
+}
+/* versão e copyright */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.creditos{position:fixed;left:16px;bottom:14px;z-index:15;font-size:11px;font-weight:600;color:var(--faint);pointer-events:auto;line-height:1.4}
+.creditos a{color:inherit;text-decoration:none}
+.creditos a:hover{color:var(--ink);text-decoration:underline}
+.creditos b{font-family:var(--f-mono);font-weight:700}
+.rodape-m{font-size:12px;color:var(--muted);text-align:center;margin:0}
+.rodape-m a{color:var(--accent)}
+@media (max-width:1100px){ .creditos{display:none} }
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .e-flux{animation:fluxo var(--dur,1s) linear infinite!important}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="lgRefr" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.006 0.009" numOctaves="2" seed="11" result="ruido"/>
+    <feGaussianBlur in="ruido" stdDeviation="3" result="liso"/>
+    <feDisplacementMap in="SourceGraphic" in2="liso" scale="34" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<h1 class="sr">Simulador de instalação elétrica online · Painel de Ligações</h1>
+<p class="sr">Monte o quadro de distribuição com disjuntores, DR, DPS, barramentos e conectores Wago; ligue interruptores simples, paralelos (three-way), intermediários (four-way), pulsadores, dimmers e interruptores inteligentes Wi-Fi a lâmpadas, plafons, fitas LED, ventiladores e tomadas; depois energize o circuito para ver a corrente circulando, as lâmpadas acendendo e os disjuntores desarmando em curto. Exporte o projeto em JSON, PNG ou PDF com lista de materiais.</p>
+<main class="bancada" id="bancada">
+  <svg id="tela" aria-label="Quadro de montagem">
+    <defs>
+      <pattern id="pgMenor" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M10 0H0V10" class="gm"/></pattern>
+      <pattern id="pgMaior" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="url(#pgMenor)"/><path d="M100 0H0V100" class="gM"/></pattern>
+      <radialGradient id="gHalo"><stop offset="0" stop-color="#ffe7a3" stop-opacity=".95"/><stop offset=".22" stop-color="#ffc23d" stop-opacity=".55"/><stop offset=".55" stop-color="#ff9f0a" stop-opacity=".18"/><stop offset="1" stop-color="#ff9f0a" stop-opacity="0"/></radialGradient>
+      <radialGradient id="gBulbo" cx=".42" cy=".38" r=".75"><stop offset="0" stop-color="#fffdf0"/><stop offset=".45" stop-color="#ffe28a"/><stop offset="1" stop-color="#ffaa00"/></radialGradient>
+      <radialGradient id="gFlash"><stop offset="0" stop-color="#ffffff"/><stop offset=".25" stop-color="#fff2b0" stop-opacity=".9"/><stop offset=".6" stop-color="#ff7a00" stop-opacity=".35"/><stop offset="1" stop-color="#ff3b30" stop-opacity="0"/></radialGradient>
+    </defs>
+    <g id="mundo">
+      <g id="gQuadro"></g>
+      <g id="gLuz"></g>
+      <g id="gFios"></g>
+      <g id="gNos"></g>
+      <g id="gInfo"></g>
+      <g id="gFx"></g>
+      <path id="temp" d=""/>
+      <rect id="laco" width="0" height="0" visibility="hidden"/>
+    </g>
+  </svg>
+  <div class="varredura" id="varredura"></div>
+  <div class="vinheta" id="vinheta"></div>
+</main>
+
+<header class="barra glass liquido" id="barra">
+  <div class="marca">
+    <span class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="raio" d="M13.6 2.5 5.8 13.2h5.1L9.9 21.5l8.3-11.2h-5.3z"/></svg></span>
+    <span>Painel de Ligações</span>
+  </div>
+  <div class="seg" id="segModo" data-m="montar" role="tablist" aria-label="Modo">
+    <span class="seg-gota"></span>
+    <button role="tab" data-m="montar" aria-selected="true" title="Montar o circuito (E alterna)" data-ic="chave"><span>Montar</span></button>
+    <button role="tab" data-m="sim" aria-selected="false" title="Ligar a energia e testar (E alterna)" data-ic="raio"><span>Energizar</span></button>
+  </div>
+  <span class="sep"></span>
+  <button class="btn ico" id="bDesfazer" title="Desfazer (Ctrl+Z)" aria-label="Desfazer" data-ic="desfazer"></button>
+  <button class="btn ico" id="bRefazer" title="Refazer (Ctrl+Y)" aria-label="Refazer" data-ic="refazer"></button>
+  <span class="sep"></span>
+  <button class="btn ico" id="bZoomMenos" title="Diminuir zoom" aria-label="Diminuir zoom" data-ic="zoomMenos"></button>
+  <span id="zoomTxt">100%</span>
+  <button class="btn ico" id="bZoomMais" title="Aumentar zoom" aria-label="Aumentar zoom" data-ic="zoomMais"></button>
+  <button class="btn ico" id="bAjustar" title="Enquadrar tudo (F)" aria-label="Enquadrar tudo" data-ic="enquadrar"></button>
+  <span class="sep"></span>
+  <button class="btn ico" id="bConfig" title="Ajustes do quadro" aria-label="Ajustes do quadro" data-ic="ajustes"></button>
+  <button class="btn ico" id="bTema" title="Modo claro / escuro" aria-label="Alternar modo claro ou escuro">
+    <svg class="tema-ic" viewBox="0 0 24 24" aria-hidden="true">
+      <mask id="mLua"><rect x="-4" y="-4" width="32" height="32" fill="#fff"/><circle class="lua-m" cx="25" cy="3" r="6" fill="#000"/></mask>
+      <circle class="sol" cx="12" cy="12" r="4.4" mask="url(#mLua)"/>
+      <g class="raios" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></g>
+    </svg>
+  </button>
+  <button class="btn ico" id="bAtalhos" title="Atalhos de teclado (?)" aria-label="Atalhos de teclado" data-ic="ajuda"></button>
+  <button class="btn pri" id="bArquivo" title="Salvar ou abrir (Ctrl+S)" data-ic="salvar"><span>Salvar</span></button>
+</header>
+
+<aside class="painel gaveta glass" id="gaveta" aria-label="Componentes">
+  <div class="p-cab"><div class="p-tit" data-ic="caixa">Peças</div><button class="btn ico mini" id="fGaveta" title="Esconder peças ( [ )" aria-label="Esconder peças" data-ic="setaE"></button></div>
+  <label class="busca" data-ic="busca"><input id="buscaPeca" type="search" placeholder="Buscar peça…" aria-label="Buscar peça" autocomplete="off"></label>
+  <div class="rolagem" id="gavetaLista"></div>
+</aside>
+<aside class="painel ficha glass" id="ficha" aria-label="Propriedades">
+  <div class="p-cab"><div class="p-tit" id="fichaTit"></div><button class="btn ico mini" id="fFicha" title="Esconder painel ( ] )" aria-label="Esconder painel" data-ic="setaD"></button></div>
+  <div class="rolagem" id="fichaCorpo"></div>
+</aside>
+<button class="fab glass" id="abrirGaveta" title="Mostrar peças ( [ )" aria-label="Mostrar peças" data-ic="caixa" hidden></button>
+<button class="fab glass" id="abrirFicha" title="Mostrar painel ( ] )" aria-label="Mostrar painel" data-ic="painel" hidden></button>
+
+<div class="dock glass liquido" id="dockFio">
+  <span class="dock-rot" data-ic="fio">Fio</span>
+  <div class="sws" id="sws"></div>
+  <label class="cor-custom" title="Cor personalizada"><input type="color" id="corCustom" value="#7d4bc2" aria-label="Cor personalizada do fio"></label>
+  <select id="secao" aria-label="Seção do fio" title="Seção do condutor">
+    <option value="1,5">1,5 mm²</option><option value="2,5" selected>2,5 mm²</option><option value="4">4 mm²</option><option value="6">6 mm²</option><option value="10">10 mm²</option>
+  </select>
+  <label class="tgl" title="Neutro sai azul-claro e terra verde-amarelo automaticamente"><input type="checkbox" id="auto" checked><span class="tgl-t"></span>Cor automática N/PE</label>
+</div>
+
+<div class="dock glass liquido" id="dockEnergia">
+  <button class="chave-geral on" id="bRede" role="switch" aria-checked="true" title="Chave geral: liga ou desliga a energia da rua">
+    <span class="cg-trilho"><span class="cg-knob" data-ic="power"></span></span>
+    <span class="cg-txt"><b id="redeTxt">Energia ligada</b><small>Chave geral</small></span>
+  </button>
+  <div class="osc" title="Forma de onda: tensão (amarelo) e corrente (azul)"><canvas id="osc" width="312" height="92"></canvas><span class="osc-off">SEM TENSÃO</span></div>
+  <div class="leitura"><small>Tensão</small><b><span id="lV">0</span><i>V</i></b></div>
+  <div class="leitura fase"><small>Entra no quadro</small><b><span id="lIn">0,00</span><i>A</i></b></div>
+  <div class="leitura neutro"><small>Volta (neutro)</small><b><span id="lOut">0,00</span><i>A</i></b></div>
+  <div class="leitura"><small>Potência</small><b><span id="lW">0</span><i id="lWu">W</i></b></div>
+  <div class="leitura"><small>Consumo</small><b><span id="lWh">0,00</span><i>Wh</i></b></div>
+</div>
+
+<div class="pop glass" id="popConfig" hidden>
+  <h4>Tamanho do quadro</h4>
+  <div class="linha"><input class="num" id="qw" type="number" min="200" max="20000" step="50" aria-label="Largura do quadro em pixels"><span class="unid">×</span><input class="num" id="qh" type="number" min="200" max="20000" step="50" aria-label="Altura do quadro em pixels"><span class="unid">px</span></div>
+  <h4>Traçado dos fios</h4>
+  <select id="estilo" aria-label="Como os fios são desenhados"><option value="curva">Curva</option><option value="quadrada">Quadrada</option><option value="arred">Quadrada arredondada</option><option value="reta">Reta</option></select>
+  <h4>Escala para medir cabos</h4>
+  <div class="linha"><input class="num" type="number" id="escala" min="1" max="10000" step="10"><span class="unid">px = 1 m</span></div>
+  <h4>Simulação</h4>
+  <select id="rede" aria-label="Tensão da rede" style="margin-bottom:10px"><option value="127">Rede 127 / 220 V</option><option value="220">Rede 220 / 380 V</option></select>
+  <label class="tgl"><input type="checkbox" id="valores" checked><span class="tgl-t"></span>Mostrar corrente nos fios</label>
+  <h4>Projeto</h4>
+  <button class="btn suave perigo" id="bNovo" data-ic="novo">Novo projeto em branco</button>
+</div>
+
+<div id="modal" class="fundo-modal" hidden>
+  <div class="caixa glass" role="dialog" aria-labelledby="mTit">
+    <h2 id="mTit">Salvar ou abrir projeto</h2>
+    <p>O projeto é salvo automaticamente neste navegador. Escolha um formato para guardar uma cópia.</p>
+    <div class="formatos">
+      <button class="fmt" id="sJson" data-ic="codigo"><b>Projeto .json</b><span>Abre de novo aqui para continuar editando</span></button>
+      <button class="fmt" id="sPng" data-ic="imagem"><b>Imagem .png</b><span>Desenho em alta resolução, fundo do quadro</span></button>
+      <button class="fmt" id="sPdf" data-ic="documento"><b>Documento .pdf</b><span>Desenho + lista de materiais, pronto para imprimir</span></button>
+    </div>
+    <div class="campo"><label class="rot" for="sNome">Nome do arquivo</label><input type="text" id="sNome" value="projeto-eletrico" maxlength="80"></div>
+    <details>
+      <summary>Abrir um projeto ou copiar como texto</summary>
+      <textarea id="mJson" spellcheck="false" aria-label="Projeto em JSON"></textarea>
+      <div class="acoes">
+        <button class="btn suave" id="mCopiar">Copiar texto</button>
+        <label class="btn suave" for="mArq">Abrir arquivo .json…</label>
+        <input type="file" id="mArq" accept=".json,application/json" hidden>
+        <button class="btn pri" id="mCarregar">Carregar texto colado</button>
+      </div>
+    </details>
+    <div class="acoes"><button class="btn suave" id="mFechar">Fechar</button></div>
+  </div>
+</div>
+<div id="mAtalhos" class="fundo-modal" hidden>
+  <div class="caixa glass" role="dialog" aria-labelledby="aTit">
+    <h2 id="aTit">Atalhos de teclado</h2>
+    <table class="tabela atalhos">
+      <tr><td>Montar ↔ Energizar</td><td><kbd>E</kbd></td></tr>
+      <tr><td>Ligar / desligar (no modo Energizar)</td><td>Clique no componente ou na tecla</td></tr>
+      <tr><td>Copiar · Recortar · Colar</td><td>Ctrl+C · Ctrl+X · Ctrl+V</td></tr>
+      <tr><td>Duplicar</td><td>Ctrl+D</td></tr>
+      <tr><td>Desfazer · Refazer</td><td>Ctrl+Z · Ctrl+Y</td></tr>
+      <tr><td>Selecionar tudo</td><td>Ctrl+A</td></tr>
+      <tr><td>Salvar / exportar</td><td>Ctrl+S</td></tr>
+      <tr><td>Apagar seleção</td><td>Delete · Backspace</td></tr>
+      <tr><td>Girar 90° horário · anti-horário</td><td>R · Shift+R</td></tr>
+      <tr><td>Mover seleção 10 px · 1 px</td><td>Setas · Shift+Setas</td></tr>
+      <tr><td>Zoom</td><td>+ · − · roda do mouse</td></tr>
+      <tr><td>Enquadrar tudo</td><td>F · Ctrl+0</td></tr>
+      <tr><td>Mover a vista</td><td>Espaço+arrastar · botão do meio</td></tr>
+      <tr><td>Mostrar / esconder painéis</td><td>[ · ]</td></tr>
+      <tr><td>Cancelar seleção</td><td>Esc</td></tr>
+      <tr><td>Remover fio</td><td>Duplo clique no fio</td></tr>
+    </table>
+    <p class="rodape-m">Painel de Ligações <b class="versao"></b> · © <span class="ano"></span> Alberto Guth · <a href="https://github.com/asguth/simulador-instalacao-eletrica/blob/main/LICENSE" target="_blank" rel="noopener">Licença MIT</a> · <a href="https://github.com/asguth/simulador-instalacao-eletrica" target="_blank" rel="noopener">Código no GitHub</a></p>
+    <div class="acoes"><button class="btn pri" id="aFechar">Fechar</button></div>
+  </div>
+</div>
+<footer class="creditos"><a href="https://github.com/asguth/simulador-instalacao-eletrica/releases" target="_blank" rel="noopener" title="Notas da versão"><b class="versao"></b></a> · © <span class="ano"></span> Alberto Guth · <a href="https://github.com/asguth/simulador-instalacao-eletrica/blob/main/LICENSE" target="_blank" rel="noopener">MIT</a></footer>
+<div id="toast" class="glass" hidden></div>
+<div id="tip" class="tip glass" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const GRID = 10, HEAD = 24;
+// a versão é preenchida pelo deploy a partir da tag da release (ex.: v1.2.0)
+const VERSAO = '__VERSAO__';
+document.querySelectorAll('.versao').forEach(e=>{ e.textContent = VERSAO.startsWith('__') ? 'dev' : VERSAO; });
+document.querySelectorAll('.ano').forEach(e=>{ e.textContent = new Date().getFullYear(); });
+const NS_KEY = 'painel-ligacoes-v1', UI_KEY = 'painel-ligacoes-ui';
+
+/* ---------- ícones da interface ---------- */
+const ICO = {
+  raio:'<path d="M13.4 2.8 5.6 13.4h5.6L10.2 21.2l8.2-11.1h-5.6z"/>',
+  chave:'<path d="M14.6 6.1a4.3 4.3 0 0 0-5.7 5.3l-5.3 5.3a1.6 1.6 0 1 0 2.3 2.3l5.3-5.3a4.3 4.3 0 0 0 5.3-5.7l-2.5 2.5-2.1-.4-.4-2.1z"/>',
+  desfazer:'<path d="M8.5 14.5 4 10l4.5-4.5"/><path d="M4 10h10a5.5 5.5 0 0 1 0 11h-3"/>',
+  refazer:'<path d="M15.5 14.5 20 10l-4.5-4.5"/><path d="M20 10H10a5.5 5.5 0 0 0 0 11h3"/>',
+  zoomMenos:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="M7.8 10.5h5.4M20 20l-4.6-4.6"/>',
+  zoomMais:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="M7.8 10.5h5.4M10.5 7.8v5.4M20 20l-4.6-4.6"/>',
+  enquadrar:'<path d="M4 8.5V5.5A1.5 1.5 0 0 1 5.5 4h3M15.5 4h3A1.5 1.5 0 0 1 20 5.5v3M20 15.5v3a1.5 1.5 0 0 1-1.5 1.5h-3M8.5 20h-3A1.5 1.5 0 0 1 4 18.5v-3"/><rect x="8.5" y="8.5" width="7" height="7" rx="1.6"/>',
+  ajustes:'<path d="M4 7h8M16 7h4M4 12h3M11 12h9M4 17h10M18 17h2"/><circle cx="14" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="16" cy="17" r="2"/>',
+  ajuda:'<circle cx="12" cy="12" r="8.6"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.2.9-1.2 1.7v.4"/><path d="M12 16.9v.2"/>',
+  salvar:'<path d="M12 3.5v11m0 0-4.2-4.2M12 14.5l4.2-4.2"/><path d="M4.5 14.5v3a2.5 2.5 0 0 0 2.5 2.5h10a2.5 2.5 0 0 0 2.5-2.5v-3"/>',
+  caixa:'<rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><path d="M17 13.5v7M13.5 17h7"/>',
+  painel:'<rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M14.5 4v16M17 8.5h1M17 11.5h1"/>',
+  setaE:'<path d="m14.5 6-6 6 6 6"/>', setaD:'<path d="m9.5 6 6 6-6 6"/>',
+  busca:'<circle cx="11" cy="11" r="6.3"/><path d="m20 20-4.4-4.4"/>',
+  fio:'<path d="M3.5 16.5c4.5 0 4-9 8.5-9s4 9 8.5 9"/><circle cx="3.5" cy="16.5" r="1.4"/><circle cx="20.5" cy="16.5" r="1.4"/>',
+  power:'<path d="M12 3.5v8"/><path d="M6.6 6.8a7.5 7.5 0 1 0 10.8 0"/>',
+  lixo:'<path d="M4.5 7h15M10 11v6M14 11v6M6 7l.9 11.2A2 2 0 0 0 8.9 20h6.2a2 2 0 0 0 2-1.8L18 7M9 7V4.5h6V7"/>',
+  girar:'<path d="M19.5 11.5A7.5 7.5 0 1 1 17.3 6"/><path d="M19.5 4v5h-5"/>',
+  duplicar:'<rect x="8.5" y="8.5" width="11.5" height="11.5" rx="2.5"/><path d="M15.5 8.5v-2A2.5 2.5 0 0 0 13 4H6.5A2.5 2.5 0 0 0 4 6.5V13a2.5 2.5 0 0 0 2.5 2.5h2"/>',
+  mais:'<path d="M12 5v14M5 12h14"/>',
+  restaurar:'<path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4h4"/>',
+  novo:'<path d="M13.5 3.5H7A2.5 2.5 0 0 0 4.5 6v12A2.5 2.5 0 0 0 7 20.5h10a2.5 2.5 0 0 0 2.5-2.5V9.5z"/><path d="M13.5 3.5v6h6M12 12v5M9.5 14.5h5"/>',
+  codigo:'<path d="m8.5 8-4 4 4 4M15.5 8l4 4-4 4M13.5 5.5l-3 13"/>',
+  imagem:'<rect x="3.5" y="4.5" width="17" height="15" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="m4 17 5-4.5 3.5 3 3-2.5 4.5 4"/>',
+  documento:'<path d="M14 3.5H7A2.5 2.5 0 0 0 4.5 6v12A2.5 2.5 0 0 0 7 20.5h10a2.5 2.5 0 0 0 2.5-2.5V9z"/><path d="M14 3.5V9h5.5M8.5 13h7M8.5 16.5h5"/>',
+  check:'<path d="M5 12.5 10 17.5 19 7"/>',
+  alerta:'<path d="M12 4 2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17v.2"/>',
+  plugue:'<path d="M9 3v5M15 3v5M6.5 8h11v3.5a5.5 5.5 0 0 1-11 0zM12 17v4"/>',
+};
+const ic = (n, cls='') => `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICO[n]||''}</svg>`;
+
+/* ---------- cores de fio (NBR 5410: neutro azul-claro, PE verde-amarelo/verde) ---------- */
+const CORES = {
+  vermelho:{nome:'Vermelho', hex:'#d7263d'},
+  preto:{nome:'Preto', hex:'#1c1d20'},
+  branco:{nome:'Branco', hex:'#f3f3ee'},
+  marrom:{nome:'Marrom', hex:'#7b4a26'},
+  cinza:{nome:'Cinza', hex:'#8a8f98'},
+  amarelo:{nome:'Amarelo', hex:'#f2cc0c'},
+  laranja:{nome:'Laranja', hex:'#f07f1a'},
+  azul:{nome:'Azul-claro (neutro)', hex:'#3fa7e0'},
+  verde:{nome:'Verde (terra)', hex:'#2e9e4f'},
+  vdam:{nome:'Verde-amarelo (terra)', hex:'#2e9e4f', listra:'#f2cc0c'},
+};
+const corInfo = c => CORES[c] || {nome:'Personalizada '+c, hex:c};
+const LARG = {'1,5':2.6,'2,5':3.2,'4':3.8,'6':4.4,'10':5.2};
+const TIPO_CURTO = {F:'fase', N:'neutro', PE:'terra', C:'comum', R:'retorno', L:'carga', X:'passivo'};
+const TIPOS = {F:'Fase', N:'Neutro', PE:'Terra', C:'Comum (entrada do interruptor)', R:'Retorno', L:'Entrada da carga', X:'Passivo'};
+
+/* ---------- catálogo ---------- */
+const CAT = {};
+const T = (id, lb, ty, s) => ({id, lb, ty, s});
+function def(id, o){
+  o.id = id;
+  const nl = o.t.filter(x=>x.s==='l').length, nr = o.t.filter(x=>x.s==='r').length;
+  if(!o.h) o.h = Math.max(o.min||66, HEAD + Math.max(nl,nr,1)*22 + 8);
+  CAT[id] = o;
+}
+// Quadro e proteção
+def('medidor',{nome:'Entrada de energia / medidor', curto:'Entrada', cat:'prot', w:120, ic:'medidor', t:[T('F1','F1','F','r'),T('F2','F2','F','r'),T('F3','F3','F','r'),T('N','N','N','r'),T('PE','PE','PE','r')]});
+def('disj1',{nome:'Disjuntor monopolar (1P)', curto:'Disjuntor 1P', cat:'prot', w:110, ic:'disj', n:1, t:[T('i1','L1','F','l'),T('o1','L1','F','r')]});
+def('disj2',{nome:'Disjuntor bipolar (2P)', curto:'Disjuntor 2P', cat:'prot', w:110, ic:'disj', n:2, t:[T('i1','L1','F','l'),T('i2','L2','F','l'),T('o1','L1','F','r'),T('o2','L2','F','r')]});
+def('disj3',{nome:'Disjuntor tripolar (3P)', curto:'Disjuntor 3P', cat:'prot', w:110, ic:'disj', n:3, t:[T('i1','L1','F','l'),T('i2','L2','F','l'),T('i3','L3','F','l'),T('o1','L1','F','r'),T('o2','L2','F','r'),T('o3','L3','F','r')]});
+def('dr2',{nome:'Interruptor DR / IDR 2P 30 mA', curto:'DR 30 mA', cat:'prot', w:110, ic:'dr', t:[T('Li','L','F','l'),T('Ni','N','N','l'),T('Lo','L','F','r'),T('No','N','N','r')]});
+def('dps',{nome:'DPS (protetor contra surtos)', curto:'DPS', cat:'prot', w:100, ic:'dps', t:[T('L','L','F','l'),T('PE','PE','PE','r')]});
+function barra(id, nome, curto, ty){
+  const t=[T('in','in',ty,'l')]; for(let i=1;i<=8;i++) t.push(T('b'+i,String(i),ty,'b'));
+  def(id,{nome, curto, cat:'prot', w:220, h:70, ic:'barra', bus:true, t});
+}
+barra('barN','Barramento de neutro','Barra de neutro','N');
+barra('barPE','Barramento de terra','Barra de terra','PE');
+// Wago
+function wago(id, cod, n){
+  const t=[]; // todas as vias do lado esquerdo
+  for(let i=1;i<=n;i++) t.push(T(String(i),String(i),'X','l'));
+  def(id,{nome:`Wago ${cod} · ${n} vias`, curto:`Wago ${cod}`, cat:'wago', w:84, ic:'wago', n, bus:true, t});
+}
+[['w221_2','221-412',2],['w221_3','221-413',3],['w221_5','221-415',5],
+ ['w222_2','222-412',2],['w222_3','222-413',3],['w222_5','222-415',5],
+ ['w2273_2','2273-202',2],['w2273_3','2273-203',3],['w2273_4','2273-204',4],['w2273_5','2273-205',5],['w2273_8','2273-208',8]
+].forEach(a=>wago(...a));
+// Interruptores
+for(let n=1;n<=4;n++){
+  const t=[T('C','C','C','l')]; for(let i=1;i<=n;i++) t.push(T('R'+i,'R'+i,'R','r'));
+  def('int'+n,{nome:`Interruptor simples ${n} tecla${n>1?'s':''}`, curto:`Interruptor ${n}T`, cat:'int', w:118, ic:'tecla', n, t});
+}
+for(let n=1;n<=4;n++){
+  const t=[T('L','L','C','l'),T('N','N','N','l')]; for(let i=1;i<=n;i++) t.push(T('L'+i,'L'+i,'R','r'));
+  def('smart'+n,{nome:`Interruptor inteligente Wi-Fi ${n} tecla${n>1?'s':''}`, curto:`Smart ${n}T`, cat:'int', w:118, ic:'tecla', n, smart:true, t});
+}
+def('par1',{nome:'Interruptor paralelo (three-way) 1 tecla', curto:'Paralelo 1T', cat:'int', w:118, ic:'paralelo', n:1, t:[T('C','C','C','l'),T('P1','P1','R','r'),T('P2','P2','R','r')]});
+def('par2',{nome:'Interruptor paralelo (three-way) 2 teclas', curto:'Paralelo 2T', cat:'int', w:124, ic:'paralelo', n:2, t:[T('C1','C·1','C','l'),T('C2','C·2','C','l'),T('P1a','P1·1','R','r'),T('P2a','P2·1','R','r'),T('P1b','P1·2','R','r'),T('P2b','P2·2','R','r')]});
+def('inter',{nome:'Interruptor intermediário (four-way)', curto:'Intermediário', cat:'int', w:118, ic:'inter', t:[T('A1','A1','R','l'),T('A2','A2','R','l'),T('B1','B1','R','r'),T('B2','B2','R','r')]});
+def('puls',{nome:'Pulsador (campainha / minuteria)', curto:'Pulsador', cat:'int', w:110, ic:'puls', t:[T('C','C','C','l'),T('R','R','R','r')]});
+def('dimmer',{nome:'Dimmer rotativo', curto:'Dimmer', cat:'int', w:110, ic:'dimmer', t:[T('L','L','C','l'),T('R','R','R','r')]});
+// Iluminação e cargas
+def('lamp',{nome:'Luminária / lâmpada', curto:'Luminária', cat:'carga', w:110, ic:'lamp', t:[T('L','L','L','l'),T('N','N','N','l'),T('PE','PE','PE','l')]});
+def('plafon',{nome:'Plafon LED', curto:'Plafon', cat:'carga', w:110, ic:'plafon', t:[T('L','L','L','l'),T('N','N','N','l'),T('PE','PE','PE','l')]});
+def('spot',{nome:'Spot embutido', curto:'Spot', cat:'carga', w:100, ic:'spot', t:[T('L','L','L','l'),T('N','N','N','l')]});
+def('ledfita',{nome:'Fita LED com driver', curto:'Fita LED', cat:'carga', w:120, ic:'led', t:[T('L','L','L','l'),T('N','N','N','l'),T('p','+','X','r'),T('m','−','X','r')]});
+def('vent',{nome:'Ventilador de teto', curto:'Ventilador', cat:'carga', w:124, ic:'vent', t:[T('Lm','L motor','L','l'),T('Ll','L luz','L','l'),T('N','N','N','l'),T('PE','PE','PE','l')]});
+def('camp',{nome:'Campainha', curto:'Campainha', cat:'carga', w:104, ic:'camp', t:[T('L','L','L','l'),T('N','N','N','l')]});
+// Outros
+def('cap',{nome:'Capacitor bypass (LED com interruptor/dimmer)', curto:'Cap. bypass', cat:'outro', w:104, ic:'cap', t:[T('A','A','X','l'),T('B','B','X','r')]});
+def('tom10',{nome:'Tomada 2P+T 10 A', curto:'Tomada 10 A', cat:'outro', w:110, ic:'tomada', t:[T('F','F','L','l'),T('N','N','N','l'),T('PE','PE','PE','l')]});
+def('tom20',{nome:'Tomada 2P+T 20 A', curto:'Tomada 20 A', cat:'outro', w:110, ic:'tomada', t:[T('F','F','L','l'),T('N','N','N','l'),T('PE','PE','PE','l')]});
+def('sensor',{nome:'Sensor de presença', curto:'Sensor', cat:'outro', w:120, ic:'sensor', t:[T('L','L','C','l'),T('N','N','N','l'),T('Cg','Carga','R','r')]});
+def('minut',{nome:'Minuteria / relé', curto:'Minuteria', cat:'outro', w:124, ic:'rele', t:[T('L','L','C','l'),T('N','N','N','l'),T('P','Puls.','X','l'),T('Cg','Carga','R','r')]});
+def('livre',{nome:'Componente livre', curto:'Componente', cat:'outro', w:110, ic:'livre', t:[T('A','A','X','l'),T('B','B','X','r')]});
+
+const GRUPOS = [
+  ['Quadro e proteção','prot',['medidor','disj1','disj2','disj3','dr2','dps','barN','barPE']],
+  ['Conectores Wago','wago',['w221_2','w221_3','w221_5','w222_2','w222_3','w222_5','w2273_2','w2273_3','w2273_4','w2273_5','w2273_8']],
+  ['Interruptores de parede','int',['int1','int2','int3','int4','smart1','smart2','smart3','smart4','par1','par2','inter','puls','dimmer']],
+  ['Iluminação e cargas','carga',['lamp','plafon','spot','ledfita','vent','camp']],
+  ['Outros','outro',['livre','cap','tom10','tom20','sensor','minut']],
+];
+
+/* ---------- estado elétrico de cada componente ---------- */
+const DEF_W = {lamp:60, plafon:24, spot:7, ledfita:36, camp:8, tom10:0, tom20:0};
+const AMPS = [6,10,16,20,25,32,40,50,63];
+const DEF_AMP = {disj1:16, disj2:20, disj3:32, dr2:40};
+const ehProt = t => /^(disj|dr2$|medidor$)/.test(t);
+const ehDisj = t => /^(disj|dr2$)/.test(t);
+const ligadoN = n => n.on!==undefined ? !!n.on : ehProt(n.tipo);
+const kOn = (n,i) => !!(n.k && n.k[i]);
+const stN = (n,i) => (n.st && n.st[i]) ? 1 : 0;
+const nivelN = n => n.nivel ?? 100;
+const ampN = n => n.amp ?? DEF_AMP[n.tipo] ?? 16;
+const acionavel = n => /^(disj|dr2$|medidor$|int\d|smart|par|inter$|puls$|dimmer$|sensor$|minut$)/.test(n.tipo);
+const nTeclas = n => /^(int\d|smart)/.test(n.tipo) ? CAT[n.tipo].n : n.tipo==='par2' ? 2 : 1;
+const LUZES = {lamp:[0], plafon:[0], spot:[0], ledfita:[0], vent:[1]};
+function cargas(n){
+  const t = n.tipo;
+  if(t in DEF_W) return [{L: t.startsWith('tom')?'F':'L', N:'N', w: n.w ?? DEF_W[t]}];
+  if(t==='vent') return [{L:'Lm', N:'N', w: n.w ?? 80, nome:'Motor'}, {L:'Ll', N:'N', w: n.w2 ?? 60, nome:'Luz'}];
+  return [];
+}
+// contatos internos fechados no estado atual: [terminal A, terminal B, id do contato]
+function contatos(n){
+  const c = [], t = n.tipo, P = (a,b,i) => c.push([a,b,n.id+'#'+i]);
+  if(/^disj/.test(t)){ if(ligadoN(n)) for(let i=1;i<=CAT[t].n;i++) P('i'+i,'o'+i,i); }
+  else if(t==='dr2'){ if(ligadoN(n)){ P('Li','Lo',1); P('Ni','No',2); } }
+  else if(/^int\d/.test(t)){ for(let i=1;i<=CAT[t].n;i++) if(kOn(n,i-1)) P('C','R'+i,i); }
+  else if(/^smart/.test(t)){ for(let i=1;i<=CAT[t].n;i++) if(kOn(n,i-1)) P('L','L'+i,i); }
+  else if(t==='par1') P('C', stN(n,0)?'P2':'P1', 1);
+  else if(t==='par2'){ P('C1', stN(n,0)?'P2a':'P1a', 1); P('C2', stN(n,1)?'P2b':'P1b', 2); }
+  else if(t==='inter'){ if(stN(n,0)){ P('A1','B2',1); P('A2','B1',2); } else { P('A1','B1',1); P('A2','B2',2); } }
+  else if(t==='puls'){ if(kOn(n,0)) P('C','R',1); }
+  else if(t==='dimmer'){ if(ligadoN(n) && nivelN(n)>0) P('L','R',1); }
+  else if(t==='sensor' || t==='minut'){ if(ligadoN(n)) P('L','Cg',1); }
+  return c;
+}
+
+/* ---------- desenho dos ícones ---------- */
+/* O corpo do componente gira, mas os textos ficam sempre na horizontal:
+   cada texto é girado de volta (−ROT) em torno da própria âncora. */
+let ROT = 0, TAGS = new Map(), MODO = 'montar';
+const VAZIO = new Set();
+function txt(x, y, anc, cls, conteudo, extra=''){
+  return `<text class="${cls}" x="${x}" y="${y}" text-anchor="${anc}" dominant-baseline="central"${ROT?` transform="rotate(${-ROT} ${x} ${y})"`:''}${extra}>${conteudo}</text>`;
+}
+const normRot = r => (((r||0)%360)+360)%360;
+const ict = (x, y, s, fs, cls='ic-t') => txt(x, y, 'middle', cls, s, fs?` font-size="${fs}"`:'');
+
+function icone(c, no){
+  no = no || {tipo:c.id};
+  const cx = c.icx ?? c.w/2, cy = c.icy ?? HEAD + (c.h-HEAD)/2, n = c.n||1;
+  const E = MODO==='sim' && SIM.res && no.id ? SIM.res : null;
+  const carga = p => E ? E.lig.get(no.id+'|'+(p||0)) : null;
+  const tg = TAGS.get(no.id) || VAZIO;
+  const lig = ligadoN(no);
+  const base = `ico ${lig?'ligado':'desligado'}${tg.has('mudou')?' mudou':''}${tg.has('disparou')?' disparou':''}`;
+  const embrulho = s => `<g class="${base}">${s}</g>`;
+  switch(c.ic){
+    case 'tecla': case 'paralelo': {
+      const W = 34, H = 38, x0 = cx-W/2, y0 = cy-H/2, kw = (W-8-(n-1)*2)/n;
+      // smart: com fase e neutro chegando fica sempre alimentado, transmitindo Wi-Fi (LEDs em espera mesmo com a tecla desligada)
+      const wifi = c.smart && E ? !!E.nos.get(no.id)?.wifi : false;
+      let s = `<rect class="ic-plate" x="${x0}" y="${y0}" width="${W}" height="${H}" rx="7"/>`;
+      for(let i=0;i<n;i++){
+        const on = c.ic==='paralelo' ? !!stN(no,i) : kOn(no,i), kx = x0+4+i*(kw+2), bw = Math.min(8, kw-3);
+        s += `<g class="tk${on?' on':''}${wifi&&!on?' espera':''}${tg.has('k'+i)?' mudou':''}" data-k="${i}">`+
+          `<rect class="tk-face" x="${kx}" y="${y0+4}" width="${kw}" height="${H-8}" rx="3.5"/>`+
+          `<g transform="translate(${kx+kw/2},${cy-1})"><rect class="tk-bar" x="${-bw/2}" y="-1.7" width="${bw}" height="3.4" rx="1.7"/></g>`+
+          `<circle class="tk-led" cx="${kx+kw/2}" cy="${y0+H-7.5}" r="1.5"/></g>`;
+      }
+      if(c.smart){
+        const bx = x0+W-1, by = y0+1, est = E ? (wifi ? ' on' : ' off') : '';
+        s += `<g class="wf${est}"><circle class="wf-anel" cx="${bx}" cy="${by}" r="6"/><circle class="wf-anel d2" cx="${bx}" cy="${by}" r="6"/>`+
+          `<circle class="ic-badge" cx="${bx}" cy="${by}" r="6"/><circle class="wf-p" cx="${bx}" cy="${by+2.6}" r=".95"/>`+
+          `<path class="ic-badge-i wf-a1" d="M${bx-1.6} ${by+.9}a2.2 2.2 0 0 1 3.2 0"/><path class="ic-badge-i wf-a2" d="M${bx-3.2} ${by-.9}a4.4 4.4 0 0 1 6.4 0"/>`+
+          `<path class="wf-x" d="M${bx-3} ${by-3}l6 6"/></g>`;
+      }
+      if(c.ic==='paralelo') s += `<circle class="ic-badge" cx="${x0+W-1}" cy="${y0+1}" r="6"/><path class="ic-badge-i" d="M${x0+W-4} ${y0-.6}h6l-1.6-1.6M${x0+W+2} ${y0+2.6}h-6l1.6 1.6"/>`;
+      return embrulho(s);
+    }
+    case 'livre': return embrulho(`<rect class="ic-s" x="${cx-15}" y="${cy-15}" width="30" height="30" rx="8" stroke-dasharray="4 3"/><path class="ic" d="M${cx} ${cy-7}v14M${cx-7} ${cy}h14"/>`);
+    case 'inter': {
+      const on = !!stN(no,0), x0 = cx-17, y0 = cy-19;
+      return embrulho(`<rect class="ic-plate" x="${x0}" y="${y0}" width="34" height="38" rx="7"/><g class="tk${on?' on':''}${tg.has('k0')?' mudou':''}" data-k="0"><rect class="tk-face" x="${x0+4}" y="${y0+4}" width="26" height="30" rx="3.5"/>`+
+        (on ? `<path class="ic" style="stroke:var(--k)" d="M${cx-7} ${cy-7}l14 12M${cx-7} ${cy+5}l14-12"/>` : `<path class="ic" style="stroke:var(--k)" d="M${cx-7} ${cy-6}h14M${cx-7} ${cy+4}h14"/>`)+
+        `<circle class="tk-led" cx="${cx}" cy="${y0+30.5}" r="1.5"/></g>`);
+    }
+    case 'puls': return embrulho(`<rect class="ic-plate" x="${cx-16}" y="${cy-16}" width="32" height="32" rx="8"/><circle class="ic-plate-in" cx="${cx}" cy="${cy}" r="10"/><g transform="translate(${cx},${cy})" data-k="0"><circle class="bt-c" r="7"/></g>`);
+    case 'dimmer': {
+      const nv = nivelN(no), a = -135 + 270*nv/100, r = 11;
+      const pt = ang => { const t=(ang-90)*Math.PI/180; return [cx+r*Math.cos(t), cy+r*Math.sin(t)]; };
+      const [ax,ay] = pt(-135), [bx,by] = pt(135), [ex,ey] = pt(a);
+      return embrulho(`<rect class="ic-plate" x="${cx-17}" y="${cy-19}" width="34" height="38" rx="7"/>`+
+        `<path class="dim-trilho" d="M${ax} ${ay}A${r} ${r} 0 1 1 ${bx} ${by}"/>`+
+        (nv>0?`<path class="dim-arc" d="M${ax} ${ay}A${r} ${r} 0 ${a+135>180?1:0} 1 ${ex} ${ey}"/>`:'')+
+        `<circle class="ic-screw" cx="${cx}" cy="${cy}" r="7.5"/><g transform="translate(${cx},${cy}) rotate(${a})"><path class="ic" d="M0 -2v-4.5"/></g>`);
+    }
+    case 'lamp': {
+      const x = cx, y = cy-4, ca = carga(0), f = ca ? ca.f : 0;
+      let raios = ''; for(let i=0;i<8;i++){ const t = i*Math.PI/4; raios += `<line x1="${Math.cos(t)*14}" y1="${Math.sin(t)*14}" x2="${Math.cos(t)*18}" y2="${Math.sin(t)*18}"/>`; }
+      return embrulho(`<g class="lp${ca?' on':''}${tg.has('acendeu')?' acendeu':''}${tg.has('apagou')?' apagou':''}" style="--f:${f}">`+
+        `<g transform="translate(${x},${y-1})"><g class="lp-raios">${raios}</g></g>`+
+        `<path class="lp-vidro" d="M${x-4.5} ${y+8}C${x-4.5} ${y+4} ${x-9.5} ${y+1.5} ${x-9.5} ${y-3.5}a9.5 9.5 0 0 1 19 0c0 5-5 7.5-5 11.5z"/>`+
+        `<path class="lp-fil" d="M${x-2.6} ${y+8}v-5.5l1.3-2 1.3 2 1.3-2 1.3 2v5.5"/>`+
+        `<path class="ic" d="M${x-4.5} ${y+10.5}h9M${x-4} ${y+13}h8M${x-2} ${y+15.5}h4"/></g>`);
+    }
+    case 'plafon': {
+      const x = cx, ca = carga(0);
+      return embrulho(`<g class="lp${ca?' on':''}${tg.has('acendeu')?' acendeu':''}${tg.has('apagou')?' apagou':''}"><circle class="ic" cx="${x}" cy="${cy}" r="14.5"/><circle class="lp-vidro" cx="${x}" cy="${cy}" r="10"/><circle class="lp-fil" cx="${x}" cy="${cy}" r="5.5" stroke-dasharray="2 2"/></g>`);
+    }
+    case 'spot': {
+      const x = cx, ca = carga(0);
+      let raios = ''; for(let i=0;i<4;i++){ const t = i*Math.PI/2+Math.PI/4; raios += `<line x1="${Math.cos(t)*11.5}" y1="${Math.sin(t)*11.5}" x2="${Math.cos(t)*15}" y2="${Math.sin(t)*15}"/>`; }
+      return embrulho(`<g class="lp${ca?' on':''}${tg.has('acendeu')?' acendeu':''}${tg.has('apagou')?' apagou':''}"><g transform="translate(${x},${cy})"><g class="lp-raios">${raios}</g></g><circle class="ic" cx="${x}" cy="${cy}" r="8.5"/><circle class="lp-vidro" cx="${x}" cy="${cy}" r="4.8"/></g>`);
+    }
+    case 'led': {
+      const ca = carga(0);
+      let s = `<g class="lp${ca?' on':''}${tg.has('acendeu')?' acendeu':''}"><rect class="ic" x="${cx-21}" y="${cy+1}" width="42" height="9" rx="3"/>`;
+      for(let i=0;i<5;i++) s += `<circle class="led-d" style="--i:${i}" cx="${cx-16+i*8}" cy="${cy+5.5}" r="2.3"/>`;
+      return embrulho(s + `<rect class="ic-s" x="${cx-10}" y="${cy-15}" width="20" height="10" rx="2.5"/>${ict(cx,cy-10,'DRV',5.5)}<path class="ic ic-fino" d="M${cx-4} ${cy-5}v6M${cx+4} ${cy-5}v6"/></g>`);
+    }
+    case 'vent': {
+      const x = cx, motor = carga(0), luz = carga(1);
+      const pas = [0,120,240].map(a=>`<path d="M0 -3C-4 -8 -4 -16 0 -19C4 -16 4 -8 0 -3z" transform="rotate(${a})"/>`).join('');
+      return embrulho(`<g transform="translate(${x},${cy})"><g class="pas${motor?' gira':''}${motor&&tg.has('acendeu')?' partiu':''}">${pas}</g></g>`+
+        `<g class="lp${luz?' on':''}"><circle class="lp-vidro" cx="${x}" cy="${cy}" r="4"/></g><circle class="ic-f" cx="${x}" cy="${cy}" r="1.3"/>`);
+    }
+    case 'camp': {
+      const x = cx, ca = carga(0);
+      return embrulho(`<g class="cp${ca?' on':''}"><g transform="translate(${x},${cy-11})"><g class="sino${ca?' on':''}"><path class="ic-s" d="M-8 17c0-6 .5-15 8-15s8 9 8 15z"/><path class="ic" d="M-10 17h20"/><circle class="ic-a" cy="20.5" r="2.4"/></g></g>`+
+        `<g transform="translate(${x},${cy})"><g class="ondas"><path class="ic" d="M12 -8a12 12 0 0 1 0 14"/><path class="ic" d="M-12 -8a12 12 0 0 0 0 14"/></g></g></g>`);
+    }
+    case 'cap': return embrulho(`<path class="ic" d="M${cx-19} ${cy}h15M${cx+4} ${cy}h15"/><rect class="ic-a" x="${cx-5}" y="${cy-12}" width="3" height="24" rx="1.2"/><rect class="ic-a" x="${cx+2}" y="${cy-12}" width="3" height="24" rx="1.2"/>${ict(cx,cy+19,"0,1µF")}`);
+    case 'tomada': {
+      const x = cx, ca = carga(0), viva = E && E.nos.get(no.id)?.Vt>0;
+      return embrulho(`<g class="tom${viva?' on':''}"><rect class="tom-face" x="${x-16}" y="${cy-16}" width="32" height="32" rx="9"/><circle class="tom-anel" cx="${x}" cy="${cy}" r="11.5"/>`+
+        `<circle class="ic-f" cx="${x-5}" cy="${cy+2.5}" r="2.2"/><circle class="ic-f" cx="${x+5}" cy="${cy+2.5}" r="2.2"/><circle class="ic-a" cx="${x}" cy="${cy-4.5}" r="2.2"/>${ca&&ca.W>0?`<circle class="ic-a" cx="${x+13}" cy="${cy-13}" r="2.5"/>`:''}</g>`);
+    }
+    case 'sensor': return embrulho(`<g class="${lig?'on':''}"><path class="ic-s" d="M${cx-13} ${cy+8}a13 13 0 0 1 26 0z"/><circle class="ic-a" cx="${cx}" cy="${cy+3}" r="3.2"/>`+
+      `<g transform="translate(${cx},${cy-2})"><g class="ondas"><path class="ic" d="M-7 -8a10 10 0 0 1 14 0"/><path class="ic" d="M-11 -13a16 16 0 0 1 22 0"/></g></g></g>`);
+    case 'rele': return embrulho(`<rect class="ic-s" x="${cx-14}" y="${cy-13}" width="28" height="26" rx="5"/><path class="ic" d="M${cx-8} ${cy+6}v-4l2-3 2 6 2-6 2 3v4"/>`+
+      `<g transform="translate(${cx+3},${cy-6})"><path class="ic" style="stroke:var(--k)" d="M0 0l8 ${lig?0:-5}"/></g><circle class="ic-f" cx="${cx+3}" cy="${cy-6}" r="1.4"/><circle class="ic" cx="${cx+11.5}" cy="${cy-6}" r="1.4"/>`);
+    case 'disj': {
+      const pw = 14, tot = n*pw, x0 = cx-tot/2, y0 = cy-18, H = 34;
+      let s = '';
+      for(let i=0;i<n;i++){ const x = x0+i*pw;
+        s += `<rect class="dj-body" x="${x+.5}" y="${y0}" width="${pw-1}" height="${H}" rx="2.5"/><circle class="ic-screw" cx="${x+pw/2}" cy="${y0+3.6}" r="1.5"/><circle class="ic-screw" cx="${x+pw/2}" cy="${y0+H-3.6}" r="1.5"/><rect class="dj-slot" x="${x+pw/2-2.6}" y="${y0+8}" width="5.2" height="18" rx="2"/>`;
+      }
+      s += `<g transform="translate(${cx},${y0+17})"><g class="dj-lev"><rect x="${-tot/2+3.5}" y="-3.2" width="${tot-7}" height="6.4" rx="2"/></g></g>`;
+      s += `<rect class="dj-win" x="${x0+2}" y="${y0+H+2.5}" width="${tot-4}" height="3" rx="1.5"/>`;
+      return embrulho(s);
+    }
+    case 'dr': return embrulho(`<rect class="dj-body" x="${cx-15}" y="${cy-18}" width="30" height="34" rx="3"/><rect class="dj-slot" x="${cx-11}" y="${cy-10}" width="6" height="18" rx="2"/>`+
+      `<g transform="translate(${cx-8},${cy-1})"><g class="dj-lev"><rect x="-4" y="-3.2" width="8" height="6.4" rx="2"/></g></g>`+
+      `<circle class="ic-s" cx="${cx+6}" cy="${cy-7}" r="4"/>${ict(cx+6,cy-7,'T',6)}<path class="ic ic-fino" d="M${cx+2} ${cy+3}h8M${cx+2} ${cy+6.5}h8"/><rect class="dj-win" x="${cx-13}" y="${cy+18.5}" width="26" height="3" rx="1.5"/>`);
+    case 'dps': return embrulho(`<rect class="dj-body" x="${cx-13}" y="${cy-18}" width="26" height="34" rx="3"/><path class="ic-a" d="M${cx+2.5} ${cy-13}l-8 12h5.5l-2.5 10 8-13h-5.5z"/><path class="ic ic-fino" d="M${cx-6} ${cy+12}h12M${cx-4} ${cy+14.5}h8"/>`);
+    case 'barra': { let s = `<rect class="ic-a" x="20" y="${HEAD+7}" width="${c.w-40}" height="11" rx="3" opacity=".9"/><rect x="20" y="${HEAD+7}" width="${c.w-40}" height="4" rx="2" fill="#fff" opacity=".25"/>`; for(let i=0;i<8;i++){ const x=c.w*(i+0.5)/8; s+=`<circle class="ic-screw" cx="${x}" cy="${HEAD+12.5}" r="3"/><path class="ic ic-fino" d="M${x-1.6} ${HEAD+12.5}h3.2"/>`; } return embrulho(s); }
+    case 'medidor': {
+      const x = cx-4.5, R = E;
+      const disp = R ? (lig ? (R.W>=1000 ? (R.W/1000).toFixed(2).replace('.',',')+'kW' : Math.round(R.W)+' W') : '—— ') : '0482';
+      return embrulho(`<rect class="md-box" x="${x-24}" y="${cy-19}" width="48" height="38" rx="6"/><rect class="md-disp" x="${x-19}" y="${cy-14}" width="38" height="12" rx="2.5"/>${ict(x,cy-8,disp,7.5,'md-txt')}`+
+        `<g transform="translate(${x-8},${cy+9})"><circle class="md-disco" r="5"/></g>${ict(x+8,cy+9,'kWh',6)}`+
+        `<g transform="translate(${x+29},${cy})"><rect class="dj-slot" x="-3" y="-10" width="6" height="20" rx="2"/><g class="dj-lev"><rect x="-4" y="-3" width="8" height="6" rx="2"/></g></g>`);
+    }
+    case 'wago': {
+      const hh = c.h-HEAD-12-(c.padB||0), step = hh/n; let s = `<rect class="ic-s" x="${cx-16}" y="${HEAD+5}" width="32" height="${hh+2}" rx="5"/>`;
+      for(let i=0;i<n;i++){ const y = HEAD+6+i*step+1, hgt = Math.max(4,step-4);
+        s += `<rect class="ic-a" x="${cx-4}" y="${y}" width="16" height="${hgt}" rx="2"/><circle class="ic-screw" cx="${cx-10}" cy="${y+hgt/2}" r="${Math.min(2.6,hgt/2)}"/>`; }
+      return embrulho(s);
+    }
+  }
+  return '';
+}
+
+/* ---------- estado ---------- */
+let S = {v:2, quadro:{w:1200,h:800}, escala:100, nos:[], fios:[], seq:1};
+// Projetos antigos guardavam o quadro em cm (10 px por cm): converte para pixels
+function migrar(o){
+  if(!o.v){ o.quadro = {w:(o.quadro?.w||120)*10, h:(o.quadro?.h||80)*10}; o.escala = o.escala||1000; o.v = 2; }
+  if(!o.escala) o.escala = 100;
+  return o;
+}
+let sel = {nos:new Set(), fio:null};
+let view = {x:60, y:50, k:1};
+let ui = {cor:'vermelho', auto:true, secao:'2,5', valores:true, gaveta:true, ficha:true};
+let drag = null, espaco = false, exemplo = false;
+let hist = [], hpos = -1;
+try{ Object.assign(ui, JSON.parse(localStorage.getItem(UI_KEY)||'{}')); }catch(e){}
+const salvarUI = () => { try{ localStorage.setItem(UI_KEY, JSON.stringify({valores:ui.valores, gaveta:ui.gaveta, ficha:ui.ficha, tema:ui.tema})); }catch(e){} };
+
+const achar = id => S.nos.find(n=>n.id===id);
+const acharFio = id => S.fios.find(f=>f.id===id);
+const snap = v => Math.round(v/GRID)*GRID;
+const novoId = p => p + (S.seq++);
+
+/* ---------- geometria ---------- */
+// Componente efetivo: catálogo + nome e terminais personalizados do usuário (tamanho se ajusta)
+function spec(no){
+  const c = CAT[no.tipo], t = no.terms || c.t, nome = no.nome || c.curto;
+  const nl = t.filter(x=>x.s==='l'), nr = t.filter(x=>x.s==='r'), nb = t.filter(x=>x.s==='b');
+  const maxLen = arr => arr.reduce((m,x)=>Math.max(m, String(x.lb).length), 0);
+  // girado 90°/270°, os terminais laterais ficam em cima/embaixo com texto horizontal: espaça pelo tamanho do texto
+  const rot = normRot(no.rot), deitado = rot===90 || rot===270;
+  const passoLR = deitado ? Math.max(22, maxLen([...nl,...nr])*6.2 + 10) : 22;
+  const passoB = deitado ? 24 : Math.max(24, maxLen(nb)*6.2 + 8);
+  // terminais embaixo: reserva uma faixa para os rótulos não ficarem por cima do ícone
+  const padB = nb.length && c.ic!=='barra' ? 22 : 0;
+  const h = Math.max(c.h, HEAD + Math.max(nl.length, nr.length, 1)*passoLR + 8) + padB;
+  const w = Math.ceil(Math.max(c.w, 18 + (maxLen(nl)+maxLen(nr))*5.9 + 46, nome.length*6.4 + 18, nb.length*passoB)/GRID)*GRID;
+  // o ícone fica no centro da área livre entre as colunas de rótulos dos terminais
+  const margem = arr => arr.length ? (deitado ? 18 : 9 + maxLen(arr)*5.4 + 6) : 6;
+  const ml = margem(nl), mr = margem(nr);
+  return {...c, w, h, t, curto:nome, n: c.ic==='wago' ? t.length : c.n, padB, icx: ml + (w-ml-mr)/2, icy: HEAD + (h-HEAD-padB)/2};
+}
+function termLocal(c, tm){
+  const grp = c.t.filter(x=>x.s===tm.s), i = grp.indexOf(tm), n = grp.length;
+  if(tm.s==='b') return {x:c.w*(i+0.5)/n, y:c.h};
+  return {x: tm.s==='l'?0:c.w, y: HEAD + (c.h-HEAD-6-(c.padB||0))*(i+0.5)/n + 3};
+}
+function girar(x, y, rot){ for(let k=0;k<((rot/90)%4+4)%4;k++){ [x,y]=[-y,x]; } return {x,y}; }
+function termMundo(no, tid){
+  const c = spec(no), tm = c.t.find(t=>t.id===tid); if(!tm) return null;
+  const p = termLocal(c, tm);
+  const r = girar(p.x-c.w/2, p.y-c.h/2, no.rot||0);
+  const d0 = tm.s==='l'?{x:-1,y:0}:tm.s==='r'?{x:1,y:0}:{x:0,y:1};
+  return {x:no.x+c.w/2+r.x, y:no.y+c.h/2+r.y, d:girar(d0.x,d0.y,no.rot||0), ty:tm.ty};
+}
+function pontoMundo(no, lx, ly){ const c = spec(no), r = girar(lx-c.w/2, ly-c.h/2, no.rot||0); return {x:no.x+c.w/2+r.x, y:no.y+c.h/2+r.y}; }
+function curva(a, da, b, db){
+  const dist = Math.hypot(b.x-a.x, b.y-a.y), o = Math.max(28, Math.min(170, dist*0.45));
+  return `M${a.x},${a.y} C${a.x+da.x*o},${a.y+da.y*o} ${b.x+db.x*o},${b.y+db.y*o} ${b.x},${b.y}`;
+}
+function arredondar(pts, r){
+  // tira pontos no meio de uma reta (não são curvas de verdade)
+  pts = pts.filter((p,i)=>{
+    if(i===0 || i===pts.length-1) return true;
+    const a = pts[i-1], b = pts[i+1];
+    return Math.abs((p.x-a.x)*(b.y-p.y) - (p.y-a.y)*(b.x-p.x)) > 0.01;
+  });
+  let d = `M${pts[0].x},${pts[0].y}`;
+  for(let i=1;i<pts.length-1;i++){
+    const p0=pts[i-1], p=pts[i], p1=pts[i+1];
+    const l1=Math.hypot(p.x-p0.x,p.y-p0.y), l2=Math.hypot(p1.x-p.x,p1.y-p.y), rr=Math.min(r,l1/2,l2/2);
+    if(rr<0.5){ d+=` L${p.x},${p.y}`; continue; }
+    d += ` L${p.x+(p0.x-p.x)/l1*rr},${p.y+(p0.y-p.y)/l1*rr} Q${p.x},${p.y} ${p.x+(p1.x-p.x)/l2*rr},${p.y+(p1.y-p.y)/l2*rr}`;
+  }
+  const u = pts[pts.length-1]; return d + ` L${u.x},${u.y}`;
+}
+/* Traçado do fio conforme o estilo: curva, quadrada, quadrada arredondada ou reta.
+   Nos estilos quadrados, `usados` guarda os trechos já desenhados; cada fio novo procura
+   uma "pista" livre (deslocando o trecho do meio de 8 em 8 px) para nunca ficar por cima de outro. */
+const PISTA = 8;
+function segmentos(pts){
+  const s = [];
+  for(let i=1;i<pts.length;i++){
+    const p = pts[i-1], q = pts[i];
+    if(Math.abs(p.y-q.y)<0.5 && Math.abs(p.x-q.x)>0.5) s.push({o:'h', c:p.y, a0:Math.min(p.x,q.x), a1:Math.max(p.x,q.x)});
+    else if(Math.abs(p.x-q.x)<0.5 && Math.abs(p.y-q.y)>0.5) s.push({o:'v', c:p.x, a0:Math.min(p.y,q.y), a1:Math.max(p.y,q.y)});
+  }
+  return s;
+}
+function conflitos(segs, usados, chaves){
+  let n = 0;
+  for(const s of segs) for(const u of usados){
+    if(u.o!==s.o || Math.abs(u.c-s.c)>=PISTA-2) continue;
+    if(Math.min(s.a1,u.a1) - Math.max(s.a0,u.a0) <= 1) continue;
+    if(chaves && u.k.some(k=>chaves.includes(k))) continue; // mesmo terminal: inevitável junto ao borne
+    n++;
+  }
+  return n;
+}
+function rota(a, da, b, db, usados, chaves){
+  const est = S.estilo || 'curva';
+  if(est==='curva') return curva(a, da, b, db);
+  if(est==='reta') return `M${a.x},${a.y} L${b.x},${b.y}`;
+  const o = 18, p1 = {x:a.x+da.x*o, y:a.y+da.y*o}, p2 = {x:b.x+db.x*o, y:b.y+db.y*o};
+  const hA = Math.abs(da.x)>0.5, hB = Math.abs(db.x)>0.5;
+  const limpar = pts => pts.filter((p,i)=>i===0 || Math.hypot(p.x-pts[i-1].x, p.y-pts[i-1].y)>0.1);
+  const desenhar = pts => est==='arred' ? arredondar(pts, 10) : 'M'+pts.map(p=>`${p.x},${p.y}`).join(' L');
+  const registrar = pts => { if(usados) segmentos(pts).forEach(s=>usados.push({...s, k:chaves||[]})); };
+  // quase alinhados e de frente um para o outro: linha direta, se o caminho estiver livre
+  const direto = (hA && hB && Math.abs(a.y-b.y)<3 && da.x*(b.x-a.x)>0 && db.x*(a.x-b.x)>0) ||
+                 (!hA && !hB && Math.abs(a.x-b.x)<3 && da.y*(b.y-a.y)>0 && db.y*(a.y-b.y)>0);
+  if(direto){
+    const pts = [a, {x:b.x, y:a.y}];
+    if(!usados || !conflitos(segmentos(pts), usados, chaves)){ registrar(pts); return `M${a.x},${a.y} L${b.x},${b.y}`; }
+  }
+  // Duas famílias de caminho: trecho do meio vertical em x=m, ou horizontal em y=m.
+  // Cada candidato é pontuado: sobreposição pesa muito, voltar por cima da própria saída também,
+  // e entre os livres vence o mais curto e com menos curvas.
+  const famV = m => limpar([a,p1,{x:m,y:p1.y},{x:m,y:p2.y},p2,b]);
+  const famH = m => limpar([a,p1,{x:p1.x,y:m},{x:p2.x,y:m},p2,b]);
+  const baseV = Math.round(hA ? (hB ? (p1.x+p2.x)/2 : p2.x) : (p1.x+p2.x)/2);
+  const baseH = Math.round(!hA ? (!hB ? (p1.y+p2.y)/2 : p2.y) : (p1.y+p2.y)/2);
+  const pontuar = pts => {
+    let custo = 0;
+    for(let i=1;i<pts.length;i++) custo += Math.abs(pts[i].x-pts[i-1].x) + Math.abs(pts[i].y-pts[i-1].y);
+    custo += (pts.length-2)*25;
+    // volta sobre a saída (sai para baixo e logo sobe, etc.)
+    const s1 = pts[2], ult = pts[pts.length-3];
+    if(s1 && ((s1.x-p1.x)*da.x + (s1.y-p1.y)*da.y) < -0.5) custo += 5000;
+    if(ult && ((p2.x-ult.x)*db.x + (p2.y-ult.y)*db.y) > 0.5) custo += 5000;
+    if(usados) custo += conflitos(segmentos(pts.slice(1,-1)), usados, chaves) * 20000;
+    return custo;
+  };
+  let melhor = null, menor = Infinity;
+  const familias = hA ? [[famV,baseV],[famH,baseH]] : [[famH,baseH],[famV,baseV]];
+  for(const [fam, base] of familias){
+    for(let i=0;i<=(usados?30:0);i++){
+      const k = i===0 ? 0 : (i%2 ? 1 : -1) * Math.ceil(i/2);
+      const pts = fam(base + k*PISTA), c = pontuar(pts);
+      if(c<menor){ menor=c; melhor=pts; }
+    }
+  }
+  registrar(melhor);
+  return desenhar(melhor);
+}
+// Calcula o traçado de todos os fios em ordem, distribuindo as pistas
+function rotear(){
+  const usados = [], out = new Map();
+  for(const f of S.fios){
+    const na = achar(f.de.no), nb = achar(f.para.no); if(!na||!nb) continue;
+    const a = termMundo(na, f.de.t), b = termMundo(nb, f.para.t); if(!a||!b) continue;
+    out.set(f.id, rota(a, a.d, b, b.d, usados, [f.de.no+':'+f.de.t, f.para.no+':'+f.para.t]));
+  }
+  return out;
+}
+function caixaNo(no){
+  const c = spec(no), rot = ((no.rot||0)%180+180)%180;
+  const w = rot===90?c.h:c.w, h = rot===90?c.w:c.h;
+  return {x:no.x+c.w/2-w/2, y:no.y+c.h/2-h/2, w, h};
+}
+function compr(f){
+  const a = termMundo(achar(f.de.no), f.de.t), b = termMundo(achar(f.para.no), f.para.t);
+  return a&&b ? Math.hypot(b.x-a.x, b.y-a.y)/(S.escala||100)*1.2 : 0; // metros pela escala do desenho, +20% de folga
+}
+
+/* ---------- redes (continuidade elétrica) ---------- */
+function redes(){
+  const pai = new Map();
+  const add = k => { if(!pai.has(k)) pai.set(k,k); };
+  const raiz = k => { while(pai.get(k)!==k){ pai.set(k, pai.get(pai.get(k))); k = pai.get(k); } return k; };
+  const unir = (a,b) => { add(a); add(b); const ra=raiz(a), rb=raiz(b); if(ra!==rb) pai.set(ra,rb); };
+  const tipoDe = new Map();
+  for(const n of S.nos){
+    const c = spec(n);
+    c.t.forEach(t => { const k=n.id+':'+t.id; add(k); tipoDe.set(k,{ty:t.ty,no:n.id}); });
+    if(c.bus) c.t.forEach(t => unir(n.id+':'+c.t[0].id, n.id+':'+t.id));
+  }
+  for(const f of S.fios) unir(f.de.no+':'+f.de.t, f.para.no+':'+f.para.t);
+  const grupos = new Map();
+  for(const k of pai.keys()){ const r=raiz(k); if(!grupos.has(r)) grupos.set(r,[]); grupos.get(r).push({k, ...tipoDe.get(k)}); }
+  return {raiz, grupos};
+}
+const tiposDaRede = (R, k) => new Set((R.grupos.get(R.raiz(k))||[]).map(m=>m.ty));
+
+function corPara(de, para){
+  if(!ui.auto) return ui.cor;
+  const R = redes();
+  const ts = new Set([...tiposDaRede(R, de.no+':'+de.t), ...tiposDaRede(R, para.no+':'+para.t)]);
+  if(ts.has('PE')) return 'vdam';
+  if(ts.has('N')) return 'azul';
+  return ui.cor;
+}
+
+/* ---------- simulação elétrica ----------
+   A entrada de energia é a fonte (F1/F2/F3 = fases A/B/C, N = neutro). Disjuntores, DR e interruptores
+   fecham contatos internos conforme o estado. Cada carga entre fase e neutro (ou entre duas fases) recebe
+   tensão e puxa I = P/V. A corrente de cada fio/contato é a soma das cargas que apagariam se ele fosse
+   cortado; o sentido sai de qual ponta continua ligada à fase (ou ao neutro, na volta). */
+const SIM = {res:null, prev:{fios:new Map(), cargas:new Map()}, mudou:new Set(), disparosNovos:[], sobre:new Map(), wh:0, vfn:127, vff:220};
+function fontes(){
+  const out = [];
+  for(const n of S.nos){
+    if(n.tipo!=='medidor' || !ligadoN(n)) continue;
+    const ids = new Set(spec(n).t.map(t=>t.id));
+    [['F1','A'],['F2','B'],['F3','C'],['N','N'],['PE','T']].forEach(([t,ty])=>{ if(ids.has(t)) out.push({k:n.id+':'+t, ty}); });
+  }
+  return out;
+}
+function listaCargas(){
+  const out = [];
+  for(const n of S.nos) cargas(n).forEach((L,p)=>out.push({key:n.id+'|'+p, no:n.id, p, Lk:n.id+':'+L.L, Nk:n.id+':'+L.N, w:L.w}));
+  return out;
+}
+function grafo(excl){
+  const pai = new Map();
+  const raiz = k => { if(!pai.has(k)){ pai.set(k,k); return k; } while(pai.get(k)!==k){ pai.set(k, pai.get(pai.get(k))); k = pai.get(k); } return k; };
+  const unir = (a,b) => { const ra=raiz(a), rb=raiz(b); if(ra!==rb) pai.set(ra,rb); };
+  for(const n of S.nos){
+    const c = spec(n);
+    if(c.bus) c.t.forEach(t=>unir(n.id+':'+c.t[0].id, n.id+':'+t.id));
+    for(const [a,b,id] of contatos(n)) if(id!==excl) unir(n.id+':'+a, n.id+':'+b);
+  }
+  for(const f of S.fios) if(f.id!==excl) unir(f.de.no+':'+f.de.t, f.para.no+':'+f.para.t);
+  return raiz;
+}
+function avaliar(raiz, fat, F, C){
+  const info = new Map();
+  const I = k => { const r = raiz(k); let o = info.get(r); if(!o){ o = {f:new Set(), n:false, t:false}; info.set(r,o); } return o; };
+  for(const m of F){ const o = I(m.k); if(m.ty==='N') o.n = true; else if(m.ty==='T') o.t = true; else o.f.add(m.ty); }
+  let curto = null;
+  for(const o of info.values()){
+    if(o.f.size>1 || (o.f.size && o.n)) curto = 'curto';
+    else if(o.f.size && o.t && !curto) curto = 'terra';
+  }
+  const lig = new Map();
+  if(!curto) for(const L of C){
+    const a = I(L.Lk), b = I(L.Nk);
+    const fa = a.f.size===1, fb = b.f.size===1;
+    let V = 0;
+    if(fa && b.n && !b.f.size) V = SIM.vfn;
+    else if(fb && a.n && !a.f.size) V = SIM.vfn;
+    else if(fa && fb && [...a.f][0]!==[...b.f][0]) V = SIM.vff;
+    if(V>0){ const f = fat?.get(L.key) ?? 1, W = L.w*f; lig.set(L.key, {V, W, I: W/V, f}); }
+  }
+  return {info, curto, lig, I};
+}
+// Qual proteção desarma num curto: a menor que, sozinha, elimina o defeito (DR primeiro em fuga para o terra)
+function escolherDisparo(tipo){
+  const cands = [];
+  for(const n of S.nos){
+    if(!ehProt(n.tipo) || !ligadoN(n)) continue;
+    const antes = n.on; n.on = false;
+    const r = avaliar(grafo(null), null, fontes(), []);
+    n.on = antes;
+    if(!r.curto) cands.push(n);
+  }
+  const peso = n => n.tipo==='medidor' ? 1e6 : n.tipo==='dr2' ? (tipo==='terra' ? -1 : 5e5) : ampN(n);
+  cands.sort((a,b)=>peso(a)-peso(b));
+  return cands[0] || null;
+}
+function simular(){
+  SIM.vfn = S.rede==='220' ? 220 : 127; SIM.vff = S.rede==='220' ? 380 : 220;
+  const C = listaCargas();
+  let F = fontes(), base = avaliar(grafo(null), null, F, C), guarda = 0;
+  while(base.curto && guarda++<12){
+    const n = escolherDisparo(base.curto); if(!n) break;
+    n.on = false; n.disparou = base.curto; SIM.disparosNovos.push(n.id); SIM.mudou.add(n.id);
+    F = fontes(); base = avaliar(grafo(null), null, F, C);
+  }
+  // dimmers reduzem a potência das cargas que dependem deles
+  const fat = new Map();
+  for(const n of S.nos){
+    if(n.tipo!=='dimmer') continue;
+    const cs = contatos(n); if(!cs.length) continue;
+    const ex = avaliar(grafo(cs[0][2]), null, F, C);
+    for(const k of base.lig.keys()) if(!ex.lig.has(k)) fat.set(k, Math.min(fat.get(k) ?? 1, nivelN(n)/100));
+  }
+  if(fat.size) base = avaliar(grafo(null), fat, F, C);
+  // corrente por fio e por contato
+  const corr = new Map(), totalI = [...base.lig.values()].reduce((a,v)=>a+v.I, 0);
+  const elems = S.fios.map(f=>f.id); S.nos.forEach(n=>contatos(n).forEach(c=>elems.push(c[2])));
+  for(const e of elems){
+    if(!totalI){ corr.set(e, {I:0, dir:1}); continue; }
+    const ex = avaliar(grafo(e), fat, F, C);
+    let I = 0; for(const [k,v] of base.lig) if(!ex.lig.has(k)) I += v.I;
+    let dir = 1; const f = I>0 && acharFio(e);
+    if(f){
+      const kd = f.de.no+':'+f.de.t, kp = f.para.no+':'+f.para.t, b = base.I(kd), a = ex.I(kd), p = ex.I(kp);
+      if(b.f.size) dir = a.f.size ? 1 : p.f.size ? -1 : 1;
+      else dir = a.n ? -1 : p.n ? 1 : 1;
+    }
+    corr.set(e, {I, dir});
+  }
+  const R = redes(), fios = new Map();
+  for(const f of S.fios){
+    const k = f.de.no+':'+f.de.t, o = base.I(k), cr = corr.get(f.id) || {I:0, dir:1};
+    const ts = tiposDaRede(R, k);
+    const risco = ['F','C','R','L'].some(t=>ts.has(t)) && !ts.has('N') && !ts.has('PE');
+    const estado = o.f.size ? 'viva' : o.n ? 'neutra' : o.t ? 'terra' : 'morta';
+    fios.set(f.id, {estado, I:cr.I, dir:cr.dir, V:o.f.size?SIM.vfn:0, risco});
+  }
+  const nos = new Map();
+  let entra = 0, volta = 0, W = 0;
+  for(const v of base.lig.values()){ entra += v.I; W += v.W; if(v.V===SIM.vfn) volta += v.I; }
+  for(const n of S.nos){
+    const cs = contatos(n), Ic = cs.reduce((m,c)=>Math.max(m, corr.get(c[2])?.I||0), 0);
+    const partes = cargas(n).map((L,p)=>base.lig.get(n.id+'|'+p)||null), ativas = partes.filter(Boolean);
+    const Vt = spec(n).t.some(t=>base.I(n.id+':'+t.id).f.size) ? SIM.vfn : 0;
+    let Vin = 0;
+    if(ehDisj(n.tipo)) Vin = base.I(n.id+':'+(n.tipo==='dr2'?'Li':'i1')).f.size ? SIM.vfn : 0;
+    const r = {partes, Ic, Vt, Vin, V: ativas[0]?.V || 0, I: ativas.reduce((a,v)=>a+v.I,0), W: ativas.reduce((a,v)=>a+v.W,0)};
+    if(n.tipo==='medidor' && ligadoN(n)){ r.I = entra; r.W = W; r.V = F.length ? SIM.vfn : 0; }
+    // interruptor inteligente: módulo Wi-Fi alimentado pela fase (L) e pelo neutro (N)
+    if(/^smart/.test(n.tipo)) r.wifi = !!(base.I(n.id+':L').f.size && base.I(n.id+':N').n);
+    nos.set(n.id, r);
+  }
+  SIM.res = {...base, corr, fios, nos, entra, volta, W, temFonte: F.length>0, temMedidor: S.nos.some(n=>n.tipo==='medidor')};
+  vigiarSobrecarga();
+}
+// Disjuntor acima da corrente nominal desarma depois de alguns instantes (curva térmica simplificada)
+function vigiarSobrecarga(){
+  for(const n of S.nos){
+    if(!ehDisj(n.tipo)) continue;
+    const I = SIM.res.nos.get(n.id)?.Ic || 0, acima = ligadoN(n) && I > ampN(n);
+    if(acima && !SIM.sobre.has(n.id)){
+      SIM.sobre.set(n.id, setTimeout(()=>{
+        SIM.sobre.delete(n.id);
+        if(MODO!=='sim' || !ligadoN(n) || (SIM.res.nos.get(n.id)?.Ic||0) <= ampN(n)) return;
+        n.on = false; n.disparou = 'sobrecarga'; SIM.disparosNovos.push(n.id); SIM.mudou.add(n.id);
+        salvarLocal(); atualizarEnergia();
+      }, 1800));
+    } else if(!acima && SIM.sobre.has(n.id)){ clearTimeout(SIM.sobre.get(n.id)); SIM.sobre.delete(n.id); }
+  }
+}
+const aceso = (res, f) => { const e = res.fios.get(f); return !!e && (e.estado==='viva' || e.I>0.0005); };
+function calcularTags(){
+  const T = new Map(); if(MODO!=='sim' || !SIM.res) return T;
+  const add = (id,t) => { if(!T.has(id)) T.set(id, new Set()); T.get(id).add(t); };
+  SIM.mudou.forEach(x=>{ const [id,k] = x.split('#'); add(id,'mudou'); if(k!==undefined) add(id,'k'+k); });
+  for(const n of S.nos) cargas(n).forEach((L,p)=>{
+    const on = SIM.res.lig.has(n.id+'|'+p), pv = SIM.prev.cargas.get(n.id+'|'+p);
+    if(pv!==undefined && pv!==on) add(n.id, on?'acendeu':'apagou');
+  });
+  for(const f of S.fios){ const on = aceso(SIM.res, f.id), pv = SIM.prev.fios.get(f.id); if(pv!==undefined && pv!==on) add(f.id, on?'acendeu':'apagou'); }
+  SIM.disparosNovos.forEach(id=>add(id,'disparou'));
+  return T;
+}
+function guardarPrev(){
+  SIM.prev.fios = new Map(S.fios.map(f=>[f.id, aceso(SIM.res, f.id)]));
+  SIM.prev.cargas = new Map(); S.nos.forEach(n=>cargas(n).forEach((L,p)=>SIM.prev.cargas.set(n.id+'|'+p, SIM.res.lig.has(n.id+'|'+p))));
+  SIM.mudou.clear();
+}
+function acionar(n, k){
+  const t = n.tipo;
+  if(/^(disj|dr2$|medidor$|dimmer$|sensor$|minut$)/.test(t)){ n.on = !ligadoN(n); if(n.on) delete n.disparou; SIM.mudou.add(n.id); }
+  else if(/^(int\d|smart)/.test(t)){
+    const N = CAT[t].n; n.k = Array.from({length:N}, (_,i)=>kOn(n,i));
+    if(k==null && N===1) k = 0;
+    if(k==null){ const v = !n.k.every(Boolean); n.k = n.k.map(()=>v); n.k.forEach((_,i)=>SIM.mudou.add(n.id+'#'+i)); }
+    else { n.k[k] = !n.k[k]; SIM.mudou.add(n.id+'#'+k); }
+  }
+  else if(t==='par1' || t==='inter'){ n.st = [stN(n,0)?0:1]; SIM.mudou.add(n.id+'#0'); }
+  else if(t==='par2'){ k = k ?? 0; n.st = [stN(n,0), stN(n,1)]; n.st[k] = n.st[k]?0:1; SIM.mudou.add(n.id+'#'+k); }
+  else if(t==='puls'){ n.k = [!kOn(n,0)]; SIM.mudou.add(n.id+'#0'); }
+  else return false;
+  salvarLocal();
+  return true;
+}
+function atualizarEnergia(semFicha){
+  simular(); render();
+  if(!semFicha) renderFicha();
+  atualizarDock(); fxPendentes();
+}
+
+/* ---------- histórico e persistência ---------- */
+function salvarLocal(){ try{ localStorage.setItem(NS_KEY, JSON.stringify(S)); }catch(e){} }
+function commit(){
+  hist = hist.slice(0, hpos+1);
+  hist.push(JSON.stringify(S)); if(hist.length>150) hist.shift();
+  hpos = hist.length-1;
+  try{ localStorage.setItem(NS_KEY, hist[hpos]); }catch(e){}
+  atualizarBotoes();
+}
+function restaurar(json){
+  S = JSON.parse(json);
+  sel.nos = new Set([...sel.nos].filter(id=>achar(id))); if(sel.fio && !acharFio(sel.fio)) sel.fio=null;
+  sincronizarBarra();
+  render(); renderFicha();
+  try{ localStorage.setItem(NS_KEY, json); }catch(e){}
+  atualizarBotoes();
+}
+function desfazer(){ if(hpos>0){ hpos--; restaurar(hist[hpos]); } }
+function refazer(){ if(hpos<hist.length-1){ hpos++; restaurar(hist[hpos]); } }
+function atualizarBotoes(){ $('#bDesfazer').disabled = hpos<=0 || MODO==='sim'; $('#bRefazer').disabled = hpos>=hist.length-1 || MODO==='sim'; }
+
+/* ---------- formatação ---------- */
+const num = (v,d) => v.toLocaleString('pt-BR', {minimumFractionDigits:d, maximumFractionDigits:d});
+const fmtA = I => (I<10 ? num(I,2) : num(I,1)) + ' A';
+const fmtW = W => W>=1000 ? num(W/1000,2)+' kW' : num(W,0)+' W';
+const fmtV = V => V+' V';
+const esc = s => String(s).replace(/[&<>"]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+
+/* ---------- render ---------- */
+const tela = $('#tela'), mundo = $('#mundo');
+function aplicarView(){ mundo.setAttribute('transform',`translate(${view.x},${view.y}) scale(${view.k})`); $('#zoomTxt').textContent = Math.round(view.k*100)+'%'; }
+
+function renderQuadro(){
+  const W = S.quadro.w, H = S.quadro.h;
+  let s = `<rect class="q-fundo" width="${W}" height="${H}" rx="6"/><rect width="${W}" height="${H}" fill="url(#pgMaior)" rx="6"/><rect class="q-borda" width="${W}" height="${H}" rx="6"/><g class="regua">`;
+  // régua em pixels: marca a cada 50 px e número a cada 100 px (quadros grandes espaçam mais)
+  const vao = Math.max(W, H), passo = vao<=3000?50:vao<=10000?250:500, rotulo = passo*2;
+  for(let px=0; px<=W; px+=passo){ s+=`<line x1="${px}" y1="-${px%rotulo?5:9}" x2="${px}" y2="0"/>`; if(px%rotulo===0) s+=`<text x="${px}" y="-12" text-anchor="middle">${px}</text>`; }
+  for(let px=0; px<=H; px+=passo){ s+=`<line x1="-${px%rotulo?5:9}" y1="${px}" x2="0" y2="${px}"/>`; if(px%rotulo===0) s+=`<text x="-12" y="${px+3.5}" text-anchor="end">${px}</text>`; }
+  s += `</g><text class="q-dim" x="${W}" y="${H+18}" text-anchor="end">Quadro ${W} × ${H} px · grade 10 px</text>`;
+  $('#gQuadro').innerHTML = s;
+}
+
+function svgFio(f, rotas){
+  const d = rotas.get(f.id); if(!d) return '';
+  const ci = corInfo(f.cor), lw = LARG[f.secao]||3.2;
+  let cls = '', extra = '';
+  if(MODO==='sim' && SIM.res){
+    const e = SIM.res.fios.get(f.id), tg = TAGS.get(f.id) || VAZIO, flui = e.I>0.0005;
+    cls = ` ${e.estado}${flui?' flui':''}${e.dir<0?' rev':''}${tg.has('acendeu')?' acendeu':''}${tg.has('apagou')?' apagou':''}`;
+    if(e.estado==='viva' || flui) extra += `<path class="e-glow" d="${d}" stroke-width="${lw*3.4}"/>`;
+    if(flui) extra += `<path class="e-flux" d="${d}" stroke-width="${lw*.95}" style="--dur:${Math.max(.22, Math.min(2.4, 1.1/Math.sqrt(e.I+.04))).toFixed(2)}s"/>`;
+    else if(e.estado==='viva') extra += `<path class="e-tensao" d="${d}" stroke-width="${lw*.9}"/>`;
+    else if(e.estado==='morta') extra += `<path class="e-ghost" d="${d}" stroke-width="${Math.max(1.4, lw*.55)}" style="--d:${(f.id.length%5)*-.4}s"/>`;
+    if(tg.has('acendeu')) extra += `<path class="e-surto" pathLength="100" d="${d}" stroke-width="${lw*1.5}"/>`;
+    if(tg.has('apagou')) extra += `<path class="e-dreno" pathLength="100" d="${d}" stroke-width="${lw*1.2}"/>`;
+  }
+  return `<g class="fio${sel.fio===f.id?' sel':''}${cls}" data-fio="${f.id}"><path class="hit" d="${d}"/>`+
+    `<path class="casca" d="${d}" stroke-width="${lw+2.4}"/><path class="nucleo" d="${d}" stroke="${ci.hex}" stroke-width="${lw}"/>`+
+    (ci.listra?`<path class="listra" d="${d}" stroke="${ci.listra}" stroke-width="${lw}" stroke-dasharray="7 7"/>`:'')+extra+`</g>`;
+}
+
+function classesNo(no){
+  if(MODO!=='sim' || !SIM.res) return '';
+  const r = SIM.res.nos.get(no.id), tg = TAGS.get(no.id) || VAZIO;
+  let s = '';
+  if(acionavel(no)) s += ' acionavel';
+  if(r && r.partes.some(Boolean)) s += ' aceso';
+  if(no.disparou && !ligadoN(no)) s += ' desarmado';
+  if(tg.has('disparou')) s += ' disparou';
+  if(tg.has('mudou')) s += ' mudou';
+  if(SIM.sobre.has(no.id)) s += ' sobre';
+  return s;
+}
+function svgNo(no, ligados){
+  const c = spec(no), rot = normRot(no.rot);
+  ROT = rot;
+  let s = `<g class="no ${c.cat}${sel.nos.has(no.id)?' sel':''}${classesNo(no)}" data-no="${no.id}" style="--k:var(--k-${c.cat})" transform="translate(${no.x},${no.y}) rotate(${rot} ${c.w/2} ${c.h/2})"><g class="no-in">`;
+  s += `<rect class="corpo" width="${c.w}" height="${c.h}" rx="8"/>`;
+  s += `<path class="cab" d="M0 ${HEAD}V8a8 8 0 0 1 8-8h${c.w-16}a8 8 0 0 1 8 8v${HEAD-8}z"/><rect class="faixa" x="0" y="${HEAD-2.5}" width="${c.w}" height="2.5"/>`;
+  // título: dentro da faixa quando ela está na horizontal; com o componente deitado, ao lado da faixa
+  if(rot===0) s += txt(9, 11.5, 'start', 'cab-t', esc(c.curto));
+  else if(rot===180) s += txt(9, 11.5, 'end', 'cab-t', esc(c.curto));
+  else s += txt(c.w/2, -8, rot===90?'start':'end', 'cab-t', esc(c.curto));
+  s += icone(c, no);
+  const R = MODO==='sim' && SIM.res;
+  for(const t of c.t){
+    const p = termLocal(c, t), k = no.id+':'+t.id;
+    const d0 = t.s==='l'?{x:-1,y:0}:t.s==='r'?{x:1,y:0}:{x:0,y:1}, dw = girar(d0.x, d0.y, rot);
+    const anc = dw.x<-0.5 ? 'start' : dw.x>0.5 ? 'end' : 'middle', recuo = anc==='middle' ? 11 : 9;
+    const orig = drag && drag.modo==='ligar' && drag.de.no===no.id && drag.de.t===t.id;
+    const viva = R && R.I(k).f.size;
+    s += txt(p.x-d0.x*recuo, p.y-d0.y*recuo, anc, 'term-t', esc(t.lb));
+    s += `<g class="term${ligados.has(k)?' lig':''}${orig?' origem':''}${viva?' viva':''}" data-no="${no.id}" data-term="${t.id}" style="--tc:var(--t-${t.ty})" transform="translate(${p.x},${p.y})"><title>${esc(t.lb)} · ${TIPOS[t.ty]}</title><circle class="hit" r="10"/><circle class="dot" r="4.5"/></g>`;
+  }
+  ROT = 0;
+  s += '</g></g>';
+  if(no.rotulo){ const b = caixaNo(no); s += `<text class="rotulo-m" x="${b.x+b.w/2}" y="${b.y+b.h+15}" text-anchor="middle">${esc(no.rotulo)}</text>`; }
+  return s;
+}
+// brilho das lâmpadas acesas, por baixo dos componentes
+function halos(){
+  let s = '';
+  for(const n of S.nos){
+    const partes = LUZES[n.tipo], r = SIM.res.nos.get(n.id); if(!partes || !r) continue;
+    const c = spec(n), cy = c.icy;
+    for(const p of partes){
+      const L = r.partes[p]; if(!L) continue;
+      const lx = c.icx, ly = n.tipo==='lamp' ? cy-6 : cy;
+      const m = pontoMundo(n, lx, ly), raio = ({spot:80, ledfita:100, vent:110}[n.tipo] || 140)*(.4+.6*L.f);
+      s += `<g transform="translate(${m.x},${m.y})"><g class="halo${TAGS.get(n.id)?.has('acendeu')?' acendeu':''}"><circle r="${raio}" fill="url(#gHalo)" opacity="${(.35+.65*L.f).toFixed(2)}"/></g></g>`;
+    }
+  }
+  return s;
+}
+function chip(x, y, t, cls){
+  const w = t.length*5.9 + 14;
+  return `<g transform="translate(${x},${y})"><g class="chip ${cls}"><rect x="${-w/2}" y="-8.5" width="${w}" height="17" rx="8.5"/><text y="0.5" text-anchor="middle" dominant-baseline="central">${esc(t)}</text></g></g>`;
+}
+// etiquetas com leituras e marcadores de fio sem energia (depende da geometria já desenhada)
+function posRender(){
+  const R = SIM.res; let s = '';
+  for(const n of S.nos){
+    const r = R.nos.get(n.id); if(!r) continue;
+    const b = caixaNo(n), x = b.x+b.w/2, y = b.y+b.h+(n.rotulo?30:14);
+    if(ehDisj(n.tipo)){
+      if(ligadoN(n)) s += chip(x, y, r.Vin ? `${fmtA(r.Ic)} / ${ampN(n)} A` : 'sem tensão', r.Vin ? (r.Ic>ampN(n)?'erro':'vivo') : 'off');
+      else s += chip(x, y, n.disparou ? 'DESARMOU' : 'DESLIGADO', n.disparou ? 'erro' : 'off');
+    } else if(n.tipo==='medidor') s += chip(x, y, ligadoN(n) ? `${fmtW(R.W)} · ${fmtA(R.entra)}` : 'CHAVE DESLIGADA', ligadoN(n) ? 'vivo' : 'erro');
+    else if(r.partes.length){
+      if(r.W>0 || r.partes.some(Boolean)) s += chip(x, y, `${fmtV(r.V)} · ${fmtW(r.W)}`, 'vivo');
+      else if(r.Vt && n.tipo.startsWith('tom')) s += chip(x, y, `${fmtV(r.Vt)}`, 'vivo');
+    }
+  }
+  let i = 0;
+  document.querySelectorAll('#gFios .fio').forEach(el=>{
+    const r = R.fios.get(el.dataset.fio); if(!r) return;
+    const morto = r.estado==='morta' && r.risco, val = ui.valores && r.I>0.0005;
+    if(!morto && !val) return;
+    const p = el.querySelector('.nucleo'), L = p.getTotalLength(), m = p.getPointAtLength(L/2);
+    if(morto){ const d = ((i++)%7*.27).toFixed(2);
+      s += `<g class="morto" transform="translate(${m.x},${m.y})" style="--d:-${d}s"><g class="morto-b"><circle class="morto-anel" r="9"/><circle class="morto-bg" r="9"/><path class="morto-ic" d="M1.4 -6 -3.6 1h3.4L-1.4 6 3.6 -1H.2z"/><path class="morto-x" d="M-6 6 6 -6"/></g></g>`; }
+    else s += chip(m.x, m.y, fmtA(r.I), r.estado==='neutra' ? 'n' : 'vivo');
+  });
+  $('#gInfo').innerHTML = s;
+}
+
+function render(){
+  renderQuadro();
+  const ligados = new Set();
+  S.fios.forEach(f=>{ ligados.add(f.de.no+':'+f.de.t); ligados.add(f.para.no+':'+f.para.t); });
+  const rotas = rotear();
+  TAGS = calcularTags();
+  $('#gFios').innerHTML = S.fios.map(f=>svgFio(f, rotas)).join('');
+  $('#gNos').innerHTML = S.nos.map(n=>svgNo(n, ligados)).join('');
+  const sim = MODO==='sim' && SIM.res;
+  $('#gLuz').innerHTML = sim ? halos() : '';
+  $('#gInfo').innerHTML = '';
+  if(sim){ posRender(); guardarPrev(); }
+}
+
+/* ---------- efeitos ---------- */
+function fx(html, ms){ const g = $('#gFx'); const w = document.createElementNS('http://www.w3.org/2000/svg','g'); w.innerHTML = html; g.appendChild(w); setTimeout(()=>w.remove(), ms); }
+function fxOnda(x, y){ fx(`<g transform="translate(${x},${y})"><circle class="fx-onda" r="30"/></g>`, 700); }
+function fxFaiscas(x, y, n, alcance){
+  let s = `<g transform="translate(${x},${y})">`;
+  for(let i=0;i<n;i++){ const a = Math.random()*Math.PI*2, d = alcance*(.5+Math.random()*.7), l = 3+Math.random()*6;
+    s += `<line class="faisca" x1="0" y1="0" x2="${Math.cos(a)*l}" y2="${Math.sin(a)*l}" style="--dx:${(Math.cos(a)*d).toFixed(1)}px;--dy:${(Math.sin(a)*d).toFixed(1)}px;animation-delay:${(Math.random()*.08).toFixed(2)}s"/>`; }
+  fx(s+'</g>', 900);
+}
+function fxPendentes(){
+  const lista = SIM.disparosNovos.splice(0);
+  lista.forEach((id, i)=>{
+    const n = achar(id); if(!n) return;
+    const b = caixaNo(n), x = b.x+b.w/2, y = b.y+b.h/2;
+    setTimeout(()=>{
+      fx(`<g transform="translate(${x},${y})"><circle class="fx-flash" r="120"/></g>`, 800);
+      fxFaiscas(x, y, 22, 90);
+      const bc = $('#bancada'); bc.classList.remove('tremor'); void bc.offsetWidth; bc.classList.add('tremor');
+      const v = $('#vinheta'); v.classList.remove('flash'); void v.offsetWidth; v.classList.add('flash'); setTimeout(()=>v.classList.remove('flash'), 750);
+    }, i*120);
+    const motivo = {curto:'curto-circuito entre fase e neutro', terra:'fuga de corrente para o terra', sobrecarga:'sobrecarga — corrente acima de '+ampN(n)+' A'}[n.disparou] || 'defeito';
+    toast(`⚡ ${nomeNo(n)} desarmou: ${motivo}`, true);
+  });
+}
+
+/* ---------- gaveta ---------- */
+const semAcento = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+function renderGaveta(){
+  let s = '', idx = 0;
+  for(const [tit, cat, ids] of GRUPOS){
+    s += `<div class="grupo-p"><h3 style="--k:var(--k-${cat})"><i></i>${tit}</h3><div class="pecas">`;
+    for(const id of ids){
+      const c = CAT[id], cy = HEAD+(c.h-HEAD)/2;
+      const vb = c.ic==='wago' ? `${c.w/2-26} ${HEAD} 52 ${c.h-HEAD}` : c.ic==='barra' ? `14 ${HEAD} ${c.w-28} 26` : c.ic==='medidor' ? `${c.w/2-32} ${cy-26} 64 52` : `${c.w/2-25} ${cy-25} 50 50`;
+      s += `<div class="peca" draggable="true" data-tipo="${id}" data-busca="${esc(c.nome+' '+c.curto+' '+tit)}" tabindex="0" role="button" title="${esc(c.nome)} — arraste para o quadro" style="--k:var(--k-${cat});--n:${idx++}"><svg viewBox="${vb}" style="--k:var(--k-${cat})">${icone(c)}</svg>${esc(c.curto)}<small>${c.t.length} term.</small></div>`;
+    }
+    s += '</div></div>';
+  }
+  $('#gavetaLista').innerHTML = s + '<p class="nada" id="semPeca" hidden>Nenhuma peça com esse nome.</p>';
+}
+$('#buscaPeca').addEventListener('input', e=>{
+  const q = semAcento(e.target.value.trim()); let total = 0;
+  document.querySelectorAll('#gavetaLista .grupo-p').forEach(g=>{
+    let vis = 0;
+    g.querySelectorAll('.peca').forEach(p=>{ const ok = !q || semAcento(p.dataset.busca).includes(q); p.hidden = !ok; vis += ok; });
+    g.hidden = !vis; total += vis;
+  });
+  $('#semPeca').hidden = total>0;
+});
+
+function adicionar(tipo, x, y, rotulo){
+  const c = CAT[tipo];
+  const no = {id:novoId('n'), tipo, x:snap(x-c.w/2), y:snap(y-c.h/2), rot:0, rotulo:rotulo||''};
+  S.nos.push(no); return no;
+}
+
+/* ---------- ficha (painel direito) ---------- */
+function nomeNo(n){ const c=spec(n); return n.rotulo ? `${c.curto} (${n.rotulo})` : c.curto; }
+function bolinha(cor){ const ci=corInfo(cor); return `<span class="bolinha${cor==='vdam'?' vdam':''}" style="--c:${ci.hex}"></span>`; }
+
+function verificar(){
+  const R = redes(), out = [];
+  for(const membros of R.grupos.values()){
+    const ts = new Set(membros.map(m=>m.ty)), nos = [...new Set(membros.map(m=>m.no))];
+    const nomes = nos.slice(0,3).map(id=>nomeNo(achar(id))).join(', ');
+    if(ts.has('F') && ts.has('N')) out.push({n:'erro', m:`Curto-circuito: fase e neutro no mesmo ponto (${nomes}).`, nos});
+    if(ts.has('F') && ts.has('PE')) out.push({n:'erro', m:`Fase ligada ao terra (${nomes}).`, nos});
+    if(ts.has('N') && ts.has('PE')) out.push({n:'aviso', m:`Neutro unido ao terra (${nomes}). Dentro da casa eles devem seguir separados.`, nos});
+    if(ts.has('N') && (ts.has('C')||ts.has('R'))) out.push({n:'aviso', m:`Neutro passando por interruptor (${nomes}). O interruptor deve cortar a fase.`, nos});
+  }
+  for(const f of S.fios){
+    const ts = tiposDaRede(R, f.de.no+':'+f.de.t), nos=[f.de.no,f.para.no];
+    if(f.cor==='azul' && !ts.has('N') && (ts.has('F')||ts.has('R')||ts.has('C')||ts.has('L'))) out.push({n:'aviso', m:'Fio azul-claro em condutor que não é neutro. A NBR 5410 reserva essa cor ao neutro.', nos, fio:f.id});
+    if((f.cor==='vdam'||f.cor==='verde') && !ts.has('PE') && ts.size>1) out.push({n:'aviso', m:'Fio verde ou verde-amarelo fora do terra. Essa cor é exclusiva do condutor de proteção.', nos, fio:f.id});
+    if(ts.has('N') && f.cor!=='azul') out.push({n:'aviso', m:`Neutro com fio ${corInfo(f.cor).nome.toLowerCase()}. Use azul-claro.`, nos, fio:f.id});
+    if(ts.has('PE') && f.cor!=='vdam' && f.cor!=='verde') out.push({n:'aviso', m:`Terra com fio ${corInfo(f.cor).nome.toLowerCase()}. Use verde-amarelo ou verde.`, nos, fio:f.id});
+  }
+  const lig = new Set(); S.fios.forEach(f=>{ lig.add(f.de.no+':'+f.de.t); lig.add(f.para.no+':'+f.para.t); });
+  for(const n of S.nos){
+    const c = spec(n);
+    if(c.cat!=='carga' && !['tom10','tom20'].includes(n.tipo)) continue;
+    const temL = c.t.some(t=>t.ty==='L' && lig.has(n.id+':'+t.id));
+    if(temL && !lig.has(n.id+':N')) out.push({n:'aviso', m:`${nomeNo(n)} sem neutro ligado.`, nos:[n.id]});
+  }
+  return out;
+}
+function camposEletricos(n){
+  let s = '';
+  if(ehDisj(n.tipo)) s += `<div class="campo"><label class="rot" for="nAmp">Corrente nominal</label><select id="nAmp">${AMPS.map(a=>`<option value="${a}"${a===ampN(n)?' selected':''}>${a} A · curva C</option>`).join('')}</select></div>`;
+  const cs = cargas(n);
+  if(cs.length===1) s += `<div class="campo"><label class="rot" for="nW">Potência da carga</label><span style="display:flex;align-items:center;gap:6px"><input class="num" type="number" id="nW" min="0" max="20000" step="1" value="${cs[0].w}"><span class="unid">W</span></span></div>`;
+  if(cs.length===2) s += `<div class="campo-l"><div class="campo"><label class="rot" for="nW">Motor</label><span style="display:flex;align-items:center;gap:6px"><input class="num" type="number" id="nW" min="0" max="20000" value="${cs[0].w}"><span class="unid">W</span></span></div><div class="campo"><label class="rot" for="nW2">Luz</label><span style="display:flex;align-items:center;gap:6px"><input class="num" type="number" id="nW2" min="0" max="20000" value="${cs[1].w}"><span class="unid">W</span></span></div></div>`;
+  if(n.tipo==='dimmer') s += `<div class="campo"><label class="rot" for="nNivel">Brilho do dimmer · <span id="nNivelTxt">${nivelN(n)}%</span></label><input type="range" id="nNivel" min="0" max="100" step="5" value="${nivelN(n)}"></div>`;
+  return s;
+}
+function alertasHtml(){
+  const al = verificar();
+  window._alertas = al;
+  return `<section><h3>Verificação</h3>` + (al.length ? al.map((a,i)=>`<div class="alerta" data-i="${i}" style="--nc:var(--${a.n==='erro'?'err':'warn'})"><b>${a.n}</b><span>${esc(a.m)}</span></div>`).join('') : `<p class="ok">${ic('check')}Nenhum problema encontrado</p>`) + '</section>';
+}
+
+function renderFicha(){
+  $('#fichaTit').innerHTML = MODO==='sim' ? ic('raio')+'Energia' : ic('painel')+'Propriedades';
+  if(MODO==='sim' && SIM.res){ $('#fichaCorpo').innerHTML = fichaSim(); return; }
+  let s = '<section>';
+  if(sel.fio){
+    const f = acharFio(sel.fio), a = achar(f.de.no), b = achar(f.para.no);
+    const ta = spec(a).t.find(t=>t.id===f.de.t), tb = spec(b).t.find(t=>t.id===f.para.t);
+    s += `<h3>Fio selecionado</h3><p class="nome">${bolinha(f.cor)}${esc(corInfo(f.cor).nome)} · ${esc(f.secao)} mm²</p>
+      <p>De <b>${esc(nomeNo(a))}</b> · ${esc(ta.lb)}<br>Para <b>${esc(nomeNo(b))}</b> · ${esc(tb.lb)}</p>
+      <p class="muted">≈ ${compr(f).toFixed(2).replace('.',',')} m (pelo desenho, +20% de folga)</p>
+      <div class="campo"><span class="rot">Cor</span><div class="sws" id="fSws">${swatchesHtml(f.cor)}</div></div>
+      <div class="campo"><label class="rot" for="fSecao">Seção</label><select id="fSecao">${Object.keys(LARG).map(k=>`<option value="${k}"${k===f.secao?' selected':''}>${k} mm²</option>`).join('')}</select></div>
+      <div class="acoes"><button class="btn suave perigo" id="fApagar">${ic('lixo')}Excluir fio</button></div>`;
+  } else if(sel.nos.size===1){
+    const n = achar([...sel.nos][0]), c = spec(n);
+    const lig = new Map(); S.fios.forEach(f=>{ [f.de,f.para].forEach(e=>{ if(e.no===n.id) lig.set(e.t,(lig.get(e.t)||0)+1); }); });
+    const lados = {l:'Esq.', r:'Dir.', b:'Baixo'};
+    s += `<h3>Componente</h3><p class="nome">${esc(CAT[n.tipo].nome)}</p>
+      <div class="campo"><label class="rot" for="nNome">Nome no desenho</label><input type="text" id="nNome" value="${esc(n.nome||'')}" placeholder="${esc(CAT[n.tipo].curto)}" maxlength="28"></div>
+      <div class="campo"><label class="rot" for="nRotulo">Identificação (embaixo)</label><input type="text" id="nRotulo" value="${esc(n.rotulo||'')}" placeholder="ex.: Sala, Circuito 3, Cozinha"></div>
+      ${camposEletricos(n)}
+      <div class="thead"><span></span><span>Terminal</span><span>Tipo</span><span>Lado</span><span></span></div>
+      <div class="terms">${c.t.map((t,i)=>`<div class="trow" data-i="${i}">
+        <span class="tdot${lig.get(t.id)?' lig':''}" style="--tc:var(--t-${t.ty})" title="${lig.get(t.id)||0} fio(s) ligado(s)"></span>
+        <input type="text" class="tLb" value="${esc(t.lb)}" maxlength="12" aria-label="Nome do terminal ${i+1}">
+        <select class="tTy" aria-label="Tipo do terminal ${i+1}">${Object.keys(TIPOS).map(k=>`<option value="${k}"${k===t.ty?' selected':''}>${k} ${TIPO_CURTO[k]}</option>`).join('')}</select>
+        <select class="tSd" aria-label="Lado do terminal ${i+1}">${Object.entries(lados).map(([k,v])=>`<option value="${k}"${k===t.s?' selected':''}>${v}</option>`).join('')}</select>
+        <button class="tDel" title="Remover terminal" aria-label="Remover terminal ${i+1}">${ic('lixo')}</button></div>`).join('')}</div>
+      <div class="acoes"><button class="btn suave" id="tAdd">${ic('mais')}Terminal</button>${n.terms||n.nome?`<button class="btn suave" id="tReset">${ic('restaurar')}Restaurar padrão</button>`:''}</div>
+      ${c.bus?'<p class="muted">Todos os terminais deste componente são interligados internamente.</p>':''}
+      ${n.tipo==='cap'?'<p class="muted">Ligue em paralelo com a luminária LED, entre o retorno e o neutro, para eliminar o acende-apaga fraco.</p>':''}
+      <div class="acoes"><button class="btn suave" id="nGirar">${ic('girar')}Girar</button><button class="btn suave" id="nDup">${ic('duplicar')}Duplicar</button><button class="btn suave perigo" id="nApagar">${ic('lixo')}Excluir</button></div>`;
+  } else if(sel.nos.size>1){
+    s += `<h3>Seleção</h3><p class="nome">${sel.nos.size} componentes</p>
+      <div class="acoes"><button class="btn suave" id="nGirar">${ic('girar')}Girar</button><button class="btn suave" id="nDup">${ic('duplicar')}Duplicar</button><button class="btn suave perigo" id="nApagar">${ic('lixo')}Excluir</button></div>`;
+  } else {
+    s += `<h3>Como usar</h3>${exemplo?'<p class="exemplo">Este é um projeto de exemplo: um circuito de iluminação com interruptor de 2 teclas. Clique em <b>Energizar</b> para testar, ou em Ajustes › <b>Novo projeto</b> para começar do zero.</p>':''}
+      <ol class="lista-dica">
+        <li><b>Arraste</b> peças da gaveta para o quadro (ou toque para inserir).</li>
+        <li><b>Puxe</b> de um terminal até outro para criar o fio.</li>
+        <li><b>Clique</b> num componente para renomear, ajustar potência e terminais.</li>
+        <li>Escolha a <b>cor e a seção</b> do fio na barra de baixo.</li>
+        <li>Aperte <b>Energizar</b> (<kbd>E</kbd>) e clique nos interruptores e disjuntores para ver a corrente passar.</li>
+        <li><b>Espaço + arrastar</b> move a vista; roda do mouse dá zoom.</li>
+      </ol>`;
+  }
+  s += '</section>' + alertasHtml();
+
+  const cont = {}; S.nos.forEach(n=>cont[n.tipo]=(cont[n.tipo]||0)+1);
+  const fios = {}; S.fios.forEach(f=>{ const k=f.cor+'|'+f.secao; fios[k]=(fios[k]||0)+compr(f); });
+  s += `<section><h3>Lista de materiais</h3>`;
+  if(!S.nos.length) s += '<p class="muted">Vazia. Arraste peças para o quadro.</p>';
+  else {
+    s += `<table class="tabela">${Object.entries(cont).map(([t,q])=>`<tr><td>${esc(CAT[t].nome)}</td><td>${q} un</td></tr>`).join('')}`;
+    s += Object.entries(fios).map(([k,m])=>{ const [cor,sec]=k.split('|'); return `<tr><td>${bolinha(cor)}Cabo ${esc(sec)} mm² ${esc(corInfo(cor).nome.toLowerCase())}</td><td>${m.toFixed(1).replace('.',',')} m</td></tr>`; }).join('');
+    s += '</table>';
+  }
+  s += '</section>';
+  $('#fichaCorpo').innerHTML = s;
+}
+
+function statusNo(n, r){
+  if(n.tipo==='medidor') return ligadoN(n) ? ['on','Energia da rua ligada'] : ['erro','Chave geral desligada'];
+  if(ehDisj(n.tipo)){
+    if(!ligadoN(n)) return n.disparou ? ['erro','Desarmou'] : ['off','Desligado'];
+    return r.Vin ? ['on','Ligado · energizado'] : ['off','Ligado · sem tensão na entrada'];
+  }
+  if(r.partes.length) return r.partes.some(Boolean) ? ['on', n.tipo.startsWith('tom') ? 'Alimentando carga' : 'Ligada'] : (r.Vt ? ['on','Com tensão'] : ['off','Sem energia']);
+  if(acionavel(n)){
+    const on = /^(int\d|smart|puls)/.test(n.tipo) ? Array.from({length:nTeclas(n)},(_,i)=>kOn(n,i)).some(Boolean) : /^(par|inter)/.test(n.tipo) ? true : ligadoN(n);
+    if(/^(par|inter)/.test(n.tipo)) return [r.Vt?'on':'off', 'Posição '+(stN(n,0)+1)+(n.tipo==='par2'?' / '+(stN(n,1)+1):'')];
+    if(/^smart/.test(n.tipo)) return r.wifi ? ['on', (on ? 'Ligado' : 'Em espera')+' · Wi-Fi conectado'] : ['erro', r.Vt ? 'Sem neutro · Wi-Fi desligado' : 'Sem energia · Wi-Fi desligado'];
+    return on ? ['on', r.Vt ? 'Ligado · conduzindo' : 'Ligado · sem tensão'] : ['off','Desligado'];
+  }
+  return r.Vt ? ['on','Com tensão'] : ['off','Sem tensão'];
+}
+function controlesNo(n){
+  if(/^(int\d|smart|par2)/.test(n.tipo) || (n.tipo==='par1') || n.tipo==='inter'){
+    const N = nTeclas(n), par = /^(par|inter)/.test(n.tipo);
+    return `<div class="teclas">${Array.from({length:N},(_,i)=>{ const on = par ? !!stN(n,i) : kOn(n,i); return `<button class="tecla-b${on?' on':''}" data-acionar="${n.id}" data-k="${i}"><i></i>${par ? 'Posição '+(on?2:1) : 'Tecla '+(i+1)}</button>`; }).join('')}</div>`;
+  }
+  if(n.tipo==='puls') return `<button class="btn grande suave" data-segurar="${n.id}">${ic('power')}Segure para acionar</button>`;
+  if(acionavel(n)){ const on = ligadoN(n); return `<button class="btn grande ${on?'on':'pri'}" data-acionar="${n.id}">${ic('power')}${on ? (n.tipo==='medidor'?'Desligar chave geral':'Desligar') : (n.disparou?'Rearmar':'Ligar')}</button>`; }
+  return '';
+}
+function fichaSim(){
+  const R = SIM.res; let s = '';
+  if(!R.temMedidor) s += `<section><div class="vazio-e"><div class="grande-ic">${ic('plugue')}</div><p class="nome">Falta a entrada de energia</p><p class="muted">Coloque uma <b>Entrada de energia</b> no quadro e ligue a fase e o neutro nos circuitos.</p><div class="acoes" style="justify-content:center"><button class="btn pri" id="addEntrada">${ic('mais')}Adicionar entrada</button></div></div></section>`;
+  if(sel.nos.size===1){
+    const n = achar([...sel.nos][0]), r = R.nos.get(n.id), c = spec(n);
+    const [pc, txtS] = statusNo(n, r);
+    const V = r.V || r.Vin || r.Vt, I = r.partes.length ? r.I : n.tipo==='medidor' ? R.entra : r.Ic, W = r.partes.length || n.tipo==='medidor' ? r.W : V*I;
+    const vb = c.ic==='wago' ? `${c.icx-26} ${HEAD} 52 ${c.h-HEAD-c.padB}` : c.ic==='barra' ? `14 ${HEAD} ${c.w-28} 26` : c.ic==='medidor' ? `${c.icx-32} ${c.icy-29} 64 58` : `${c.icx-27} ${c.icy-27} 54 54`;
+    s += `<section><div class="card-e" style="--k:var(--k-${c.cat})"><div class="ce-top"><span class="ce-ic"><svg viewBox="${vb}">${icone(c, n)}</svg></span><div style="min-width:0"><p class="nome">${esc(nomeNo(n))}</p><span class="pill ${pc}">${txtS}</span></div></div>
+      <div class="medidas"><div><small>Tensão</small><b>${V} V</b></div><div><small>Corrente</small><b>${fmtA(I)}</b></div><div><small>Potência</small><b>${fmtW(W)}</b></div></div>
+      ${controlesNo(n)}${camposEletricos(n)}</div></section>`;
+  } else if(sel.fio){
+    const f = acharFio(sel.fio), e = R.fios.get(f.id);
+    const txtE = e.I>0.0005 ? ['on', e.estado==='neutra'?'Corrente voltando pelo neutro':'Corrente passando'] : e.estado==='viva' ? ['on','Com tensão, sem corrente'] : e.estado==='neutra' ? ['off','Neutro sem corrente'] : e.estado==='terra' ? ['off','Condutor de proteção'] : ['erro','Sem energia'];
+    s += `<section><div class="card-e"><p class="nome">${bolinha(f.cor)}${esc(corInfo(f.cor).nome)} · ${esc(f.secao)} mm²</p><span class="pill ${txtE[0]}">${txtE[1]}</span>
+      <div class="medidas"><div><small>Tensão</small><b>${e.V} V</b></div><div><small>Corrente</small><b>${fmtA(e.I)}</b></div><div><small>Seção</small><b>${esc(f.secao)}</b></div></div></div></section>`;
+  }
+  const prots = S.nos.filter(n=>ehDisj(n.tipo) || n.tipo==='medidor');
+  if(prots.length) s += `<section><h3>Circuitos</h3>${prots.map(n=>{
+    const r = R.nos.get(n.id), on = ligadoN(n), I = n.tipo==='medidor' ? R.entra : r.Ic, amp = n.tipo==='medidor' ? 63 : ampN(n), pct = Math.min(100, I/amp*100);
+    const bc = pct>=100 ? 'var(--err)' : pct>75 ? 'var(--warn)' : 'var(--ok)';
+    const sub = !on ? (n.disparou ? 'desarmou' : 'desligado') : n.tipo==='medidor' ? `${SIM.vfn} V · ${fmtW(R.W)}` : `${r.Vin} V · ${amp} A`;
+    return `<div class="linha-e" data-acionar="${n.id}" title="Clique para ${on?'desligar':'ligar'}"><span class="mini-tgl${on?' on':''}${!on&&n.disparou?' erro':''}"></span><div class="le-txt"><b>${esc(nomeNo(n))}</b><small>${sub}</small></div><span class="le-v">${fmtA(I)}</span><div class="barra-i" style="--bc:${bc}"><i style="width:${pct.toFixed(1)}%"></i></div></div>`;
+  }).join('')}</section>`;
+  const cmds = S.nos.filter(n=>acionavel(n) && !ehProt(n.tipo));
+  if(cmds.length) s += `<section><h3>Comandos</h3>${cmds.map(n=>{
+    const r = R.nos.get(n.id), [pc, t] = statusNo(n, r);
+    const on = pc==='on';
+    return `<div class="linha-e" data-acionar="${n.id}"><span class="mini-tgl${on?' on':''}"></span><div class="le-txt"><b>${esc(nomeNo(n))}</b><small>${t}</small></div><span class="le-v">${fmtA(r.Ic)}</span></div>`;
+  }).join('')}</section>`;
+  const cs = S.nos.filter(n=>cargas(n).length);
+  if(cs.length) s += `<section><h3>Cargas</h3>${cs.map(n=>{
+    const r = R.nos.get(n.id), on = r.partes.some(Boolean);
+    return `<div class="linha-e${on?' on':''}" data-sel="${n.id}"><span class="lampada-p"></span><div class="le-txt"><b>${esc(nomeNo(n))}</b><small>${on ? `${r.V} V · ${fmtA(r.I)}` : r.Vt ? 'com tensão' : 'desligada'}</small></div><span class="le-v">${fmtW(r.W)}</span></div>`;
+  }).join('')}</section>`;
+  return s + alertasHtml();
+}
+
+/* ---------- dock de energia ---------- */
+const tweens = new Map();
+function animarNum(el, alvo, fmtf){
+  const de = parseFloat(el.dataset.v || '0');
+  if(Math.abs(de-alvo) < 1e-6){ el.textContent = fmtf(alvo); return; }
+  el.dataset.v = alvo;
+  el.closest('.leitura')?.classList.remove('pulsa'); void el.offsetWidth; el.closest('.leitura')?.classList.add('pulsa');
+  const t0 = performance.now(), D = 650;
+  cancelAnimationFrame(tweens.get(el));
+  const passo = t => { const k = Math.min(1, (t-t0)/D), e = 1-Math.pow(1-k, 3); el.textContent = fmtf(de+(alvo-de)*e); if(k<1) tweens.set(el, requestAnimationFrame(passo)); };
+  tweens.set(el, requestAnimationFrame(passo));
+}
+function atualizarDock(){
+  const R = SIM.res; if(!R) return;
+  const meds = S.nos.filter(n=>n.tipo==='medidor'), on = meds.some(ligadoN);
+  const bR = $('#bRede');
+  bR.disabled = !meds.length; bR.classList.toggle('on', on); bR.setAttribute('aria-checked', on);
+  $('#redeTxt').textContent = !meds.length ? 'Sem entrada' : on ? 'Energia ligada' : 'Energia desligada';
+  $('#dockEnergia').classList.toggle('sem-tensao', !R.temFonte);
+  document.body.classList.toggle('blecaute', !R.temFonte);
+  animarNum($('#lV'), R.temFonte ? SIM.vfn : 0, v=>Math.round(v));
+  animarNum($('#lIn'), R.entra, v=>num(v,2));
+  animarNum($('#lOut'), R.volta, v=>num(v,2));
+  const kw = R.W>=1000; $('#lWu').textContent = kw ? 'kW' : 'W';
+  animarNum($('#lW'), kw ? R.W/1000 : R.W, v=>kw ? num(v,2) : num(v,0));
+  $('#rede').value = S.rede==='220' ? '220' : '127';
+}
+// osciloscópio: tensão e corrente senoidais rolando + contador de consumo
+let oscRAF = 0, oscT = 0, oscUlt = 0, whUlt = 0;
+const osc = $('#osc'), octx = osc.getContext('2d');
+function loopOsc(t){
+  oscRAF = requestAnimationFrame(loopOsc);
+  const dt = oscUlt ? Math.min(.1, (t-oscUlt)/1000) : 0; oscUlt = t; oscT += dt;
+  const R = SIM.res; if(!R) return;
+  SIM.wh += R.W*dt/3600;
+  if(t-whUlt > 250){ whUlt = t; $('#lWh').textContent = num(SIM.wh, SIM.wh<10?2:1); }
+  const W = osc.width, H = osc.height, mid = H/2;
+  octx.clearRect(0,0,W,H);
+  octx.strokeStyle = 'rgba(255,255,255,.06)'; octx.lineWidth = 1;
+  for(let x=0;x<W;x+=W/8){ octx.beginPath(); octx.moveTo(x,0); octx.lineTo(x,H); octx.stroke(); }
+  octx.beginPath(); octx.moveTo(0,mid); octx.lineTo(W,mid); octx.stroke();
+  const traco = (amp, cor, fase, larg) => {
+    octx.beginPath(); octx.strokeStyle = cor; octx.lineWidth = larg; octx.shadowColor = cor; octx.shadowBlur = 8;
+    for(let x=0;x<=W;x+=2){
+      const y = amp ? mid - amp*(H/2-6)*Math.sin((x/W)*Math.PI*4 - oscT*7 + fase) : mid + (Math.random()-.5)*2.2;
+      x ? octx.lineTo(x,y) : octx.moveTo(x,y);
+    }
+    octx.stroke(); octx.shadowBlur = 0;
+  };
+  traco(R.temFonte ? .82 : 0, '#ffb020', 0, 2.4);
+  if(R.temFonte) traco(R.entra>0 ? Math.min(.9, .18 + .3*Math.log10(1+R.entra*3)) : 0, '#38bdf8', 0, 2);
+}
+function iniciarOsc(){ if(!oscRAF){ oscUlt = 0; oscRAF = requestAnimationFrame(loopOsc); } }
+function pararOsc(){ cancelAnimationFrame(oscRAF); oscRAF = 0; }
+document.addEventListener('visibilitychange', ()=>{ if(document.hidden) pararOsc(); else if(MODO==='sim') iniciarOsc(); });
+$('#bRede').addEventListener('click', ()=>{
+  const meds = S.nos.filter(n=>n.tipo==='medidor'); if(!meds.length) return;
+  const v = !meds.some(ligadoN);
+  meds.forEach(n=>{ n.on = v; if(v) delete n.disparou; SIM.mudou.add(n.id); });
+  salvarLocal(); atualizarEnergia();
+  if(v){ varrer(); toast('⚡ Energia restabelecida'); } else toast('Chave geral desligada — tudo sem energia');
+});
+$('#rede').addEventListener('change', e=>{ S.rede = e.target.value; salvarLocal(); atualizarEnergia(); toast(`Rede ${e.target.value==='220'?'220 / 380':'127 / 220'} V`); });
+function varrer(){ const v = $('#varredura'); v.classList.remove('ativa'); void v.offsetWidth; v.classList.add('ativa'); }
+
+/* ---------- modo: montar / energizar ---------- */
+function definirModo(m){
+  if(m===MODO) return;
+  MODO = m;
+  document.body.classList.toggle('sim', m==='sim');
+  $('#segModo').dataset.m = m;
+  document.querySelectorAll('#segModo button').forEach(b=>b.setAttribute('aria-selected', b.dataset.m===m));
+  $('#tip').hidden = true;
+  if(m==='sim'){
+    sel.fio = null;
+    // começa tudo apagado para a energia "acender" o circuito
+    SIM.prev.fios = new Map(S.fios.map(f=>[f.id,false]));
+    SIM.prev.cargas = new Map(); S.nos.forEach(n=>cargas(n).forEach((L,p)=>SIM.prev.cargas.set(n.id+'|'+p,false)));
+    toast('Clique nos interruptores e disjuntores para ligar e desligar');
+    varrer(); atualizarEnergia(); iniciarOsc();
+  } else {
+    pararOsc(); SIM.sobre.forEach(clearTimeout); SIM.sobre.clear(); SIM.res = null;
+    document.body.classList.remove('blecaute');
+    render(); renderFicha();
+  }
+  atualizarBotoes(); atualizarInsets();
+}
+$('#segModo').addEventListener('click', e=>{ const b = e.target.closest('button'); if(b) definirModo(b.dataset.m); });
+
+/* ---------- painéis flutuantes ---------- */
+function estreito(){ return innerWidth < 900; }
+function atualizarPaineis(){
+  $('#gaveta').classList.toggle('fechado', !ui.gaveta);
+  $('#ficha').classList.toggle('fechado', !ui.ficha);
+  $('#abrirGaveta').hidden = ui.gaveta; $('#abrirFicha').hidden = ui.ficha;
+  atualizarInsets();
+}
+function atualizarInsets(){
+  const g = !estreito() && ui.gaveta && MODO!=='sim', f = !estreito() && ui.ficha;
+  document.body.style.setProperty('--gl', (g ? $('#gaveta').offsetWidth+28 : 16)+'px');
+  document.body.style.setProperty('--fr', (f ? $('#ficha').offsetWidth+28 : 16)+'px');
+}
+function alternarPainel(qual, v){
+  ui[qual] = v ?? !ui[qual];
+  if(estreito() && ui[qual]) ui[qual==='gaveta'?'ficha':'gaveta'] = false;
+  salvarUI(); atualizarPaineis();
+}
+$('#fGaveta').onclick = ()=>alternarPainel('gaveta', false);
+$('#abrirGaveta').onclick = ()=>alternarPainel('gaveta', true);
+$('#fFicha').onclick = ()=>alternarPainel('ficha', false);
+$('#abrirFicha').onclick = ()=>alternarPainel('ficha', true);
+window.addEventListener('resize', atualizarInsets);
+// brilho especular do vidro segue o mouse
+let specRAF = 0, specEv = null;
+document.addEventListener('pointermove', e=>{
+  specEv = e; if(specRAF) return;
+  specRAF = requestAnimationFrame(()=>{ specRAF = 0;
+    const g = specEv.target.closest && specEv.target.closest('.glass'); if(!g) return;
+    const r = g.getBoundingClientRect();
+    g.style.setProperty('--mx', (specEv.clientX-r.left)+'px'); g.style.setProperty('--my', (specEv.clientY-r.top)+'px');
+  });
+}, {passive:true});
+
+/* ---------- tema claro / escuro ---------- */
+const temaEfetivo = () => document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+if(ui.tema) document.documentElement.setAttribute('data-theme', ui.tema);
+$('#bTema').addEventListener('click', e=>{
+  const novo = temaEfetivo()==='dark' ? 'light' : 'dark';
+  const aplicar = () => { document.documentElement.setAttribute('data-theme', novo); ui.tema = novo; salvarUI(); };
+  if(!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return aplicar();
+  const x = e.clientX, y = e.clientY, r = Math.hypot(Math.max(x, innerWidth-x), Math.max(y, innerHeight-y));
+  document.startViewTransition(aplicar).ready.then(()=>{
+    document.documentElement.animate({clipPath:[`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`]}, {duration:700, easing:'cubic-bezier(.65,0,.35,1)', pseudoElement:'::view-transition-new(root)'});
+  }).catch(()=>{});
+});
+
+/* ---------- ações ---------- */
+function apagarSelecao(){
+  if(sel.fio){ S.fios = S.fios.filter(f=>f.id!==sel.fio); sel.fio=null; }
+  else if(sel.nos.size){ S.nos = S.nos.filter(n=>!sel.nos.has(n.id)); S.fios = S.fios.filter(f=>!sel.nos.has(f.de.no)&&!sel.nos.has(f.para.no)); sel.nos.clear(); }
+  else return;
+  commit(); render(); renderFicha();
+}
+function girarSelecao(passo=90){ if(!sel.nos.size) return; sel.nos.forEach(id=>{ const n=achar(id); n.rot=normRot((n.rot||0)+passo); }); commit(); render(); }
+/* área de transferência: componentes selecionados + fios entre eles */
+let areaInterna = null, mouseMundo = null;
+function copiarSelecao(){
+  if(!sel.nos.size) return null;
+  const nos = S.nos.filter(n=>sel.nos.has(n.id)).map(n=>JSON.parse(JSON.stringify(n)));
+  const fios = S.fios.filter(f=>sel.nos.has(f.de.no)&&sel.nos.has(f.para.no)).map(f=>JSON.parse(JSON.stringify(f)));
+  return {painelLigacoes:1, nos, fios};
+}
+function colar(dados){
+  if(!dados || !Array.isArray(dados.nos) || !dados.nos.length) return;
+  const validos = dados.nos.filter(n=>CAT[n.tipo]); if(!validos.length) return;
+  const x0 = Math.min(...validos.map(n=>n.x)), y0 = Math.min(...validos.map(n=>n.y));
+  const destino = mouseMundo ? {x:snap(mouseMundo.x), y:snap(mouseMundo.y)} : {x:x0+30, y:y0+30};
+  const mapa = new Map(), novos = new Set();
+  validos.forEach(n=>{ const c = JSON.parse(JSON.stringify(n)); c.id = novoId('n'); c.x = snap(n.x-x0+destino.x); c.y = snap(n.y-y0+destino.y); S.nos.push(c); mapa.set(n.id, c.id); novos.add(c.id); });
+  (dados.fios||[]).filter(f=>mapa.has(f.de.no)&&mapa.has(f.para.no)).forEach(f=>S.fios.push({...f, id:novoId('f'), de:{no:mapa.get(f.de.no),t:f.de.t}, para:{no:mapa.get(f.para.no),t:f.para.t}}));
+  sel.nos = novos; sel.fio = null; commit(); render(); renderFicha();
+  toast(`${novos.size} componente${novos.size>1?'s':''} colado${novos.size>1?'s':''}`);
+}
+function moverSelecao(dx, dy){
+  if(!sel.nos.size) return;
+  sel.nos.forEach(id=>{ const n=achar(id); n.x+=dx; n.y+=dy; });
+  render(); clearTimeout(moverSelecao.t); moverSelecao.t = setTimeout(commit, 350);
+}
+function duplicar(){
+  if(!sel.nos.size) return;
+  const mapa = new Map(), novos = new Set();
+  sel.nos.forEach(id=>{ const n=achar(id), c={...n, id:novoId("n"), x:n.x+20, y:n.y+20}; if(n.terms) c.terms=n.terms.map(t=>({...t})); S.nos.push(c); mapa.set(id,c.id); novos.add(c.id); });
+  S.fios.filter(f=>mapa.has(f.de.no)&&mapa.has(f.para.no)).forEach(f=>S.fios.push({...f, id:novoId('f'), de:{no:mapa.get(f.de.no),t:f.de.t}, para:{no:mapa.get(f.para.no),t:f.para.t}}));
+  sel.nos = novos; commit(); render(); renderFicha();
+}
+function ligar(de, para){
+  if(de.no===para.no && de.t===para.t) return false;
+  if(S.fios.some(f=>(f.de.no===de.no&&f.de.t===de.t&&f.para.no===para.no&&f.para.t===para.t)||(f.de.no===para.no&&f.de.t===para.t&&f.para.no===de.no&&f.para.t===de.t))) return false;
+  const f = {id:novoId('f'), de, para, cor:corPara(de,para), secao:ui.secao};
+  S.fios.push(f); return f;
+}
+// área da tela que não está coberta pelos painéis de vidro
+function areaLivre(){
+  const W = innerWidth, H = innerHeight, vis = el => el && !el.hidden && getComputedStyle(el).visibility!=='hidden' && getComputedStyle(el).opacity!=='0';
+  let l = 16, r = 16, t = 16, b = 16;
+  const br = $('#barra').getBoundingClientRect(); t = br.bottom + 12;
+  if(!estreito()){
+    if(ui.gaveta && MODO!=='sim') l = 16 + $('#gaveta').offsetWidth + 12;
+    if(ui.ficha) r = 16 + $('#ficha').offsetWidth + 12;
+  }
+  const dock = MODO==='sim' ? $('#dockEnergia') : $('#dockFio');
+  if(vis(dock)) b = H - dock.getBoundingClientRect().top + 12;
+  if(W-l-r < 240){ l = 16; r = 16; }
+  if(H-t-b < 200){ b = 16; }
+  return {l, r, t, b, W, H};
+}
+function ajustar(){
+  let x0=0, y0=0, x1=S.quadro.w, y1=S.quadro.h;
+  S.nos.forEach(n=>{ const b=caixaNo(n); x0=Math.min(x0,b.x); y0=Math.min(y0,b.y); x1=Math.max(x1,b.x+b.w); y1=Math.max(y1,b.y+b.h+20); });
+  const A = areaLivre(), m = 30, aw = A.W-A.l-A.r-m*2, ah = A.H-A.t-A.b-m*2;
+  const k = Math.max(0.02, Math.min(2, Math.min(aw/(x1-x0), ah/(y1-y0))));
+  view = {k, x:A.l+m+(aw-(x1-x0)*k)/2 - x0*k, y:A.t+m+(ah-(y1-y0)*k)/2 - y0*k};
+  mundo.style.transition = 'transform .6s cubic-bezier(.22,1,.36,1)';
+  aplicarView(); setTimeout(()=>mundo.style.transition='', 650);
+}
+function zoomEm(fator, cx, cy){
+  const k = Math.max(0.02, Math.min(3, view.k*fator));
+  view.x = cx - (cx-view.x)*k/view.k; view.y = cy - (cy-view.y)*k/view.k; view.k = k; aplicarView();
+}
+let toastT;
+function toast(m, erro){ const t=$('#toast'); t.textContent=m; t.classList.toggle('erro', !!erro); t.hidden=true; void t.offsetWidth; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true, erro?4200:2600); }
+
+/* ---------- interação no quadro ---------- */
+function mundoDe(e){ const r=tela.getBoundingClientRect(); return {x:(e.clientX-r.left-view.x)/view.k, y:(e.clientY-r.top-view.y)/view.k}; }
+function termSob(e){ const el=document.elementFromPoint(e.clientX,e.clientY); return el && el.closest ? el.closest('#tela .term') : null; }
+function iniciarPan(e){ drag={modo:'pan', sx:e.clientX, sy:e.clientY, vx:view.x, vy:view.y}; tela.classList.add('pan'); }
+function desenharTemp(){
+  const no = achar(drag.de.no), a = termMundo(no, drag.de.t);
+  let b = drag.p, db = {x:-a.d.x, y:-a.d.y};
+  if(drag.alvo){ const t=termMundo(achar(drag.alvo.no), drag.alvo.t); if(t){ b=t; db=t.d; } }
+  const temp = $('#temp');
+  temp.setAttribute('d', rota(a, a.d, b, db));
+  const cor = ui.auto && (a.ty==='N'||a.ty==='PE') ? (a.ty==='N'?'azul':'vdam') : ui.cor;
+  temp.setAttribute('stroke', corInfo(cor).hex);
+}
+
+tela.addEventListener('pointerdown', e=>{
+  if(e.button===2) return;
+  const p = mundoDe(e);
+  if(e.button===1 || espaco){ e.preventDefault(); iniciarPan(e); return; }
+  if(MODO==='sim'){
+    // no modo energizar: toque aciona, arrastar move a vista
+    const noEl = e.target.closest('.no'), kEl = e.target.closest('[data-k]'), fioEl = e.target.closest('.fio');
+    drag = {modo:'toque', sx:e.clientX, sy:e.clientY, vx:view.x, vy:view.y, p, no:noEl?.dataset.no, k:kEl?+kEl.dataset.k:null, fio:fioEl?.dataset.fio, moveu:false};
+    const n = drag.no && achar(drag.no);
+    if(n && n.tipo==='puls'){ n.k=[true]; SIM.mudou.add(n.id+'#0'); drag.segura = n; fxOnda(p.x,p.y); atualizarEnergia(true); }
+    return;
+  }
+  const termEl = e.target.closest('.term'), fioEl = e.target.closest('.fio'), noEl = e.target.closest('.no');
+  if(termEl){
+    e.preventDefault();
+    drag = {modo:'ligar', de:{no:termEl.dataset.no, t:termEl.dataset.term}, p, alvo:null};
+    termEl.classList.add('origem'); tela.classList.add('ligando'); desenharTemp(); return;
+  }
+  if(fioEl){ sel.nos.clear(); sel.fio = fioEl.dataset.fio; render(); renderFicha(); return; }
+  if(noEl){
+    const id = noEl.dataset.no;
+    if(e.shiftKey){ sel.nos.has(id) ? sel.nos.delete(id) : sel.nos.add(id); }
+    else if(!sel.nos.has(id)) sel.nos = new Set([id]);
+    sel.fio = null;
+    drag = {modo:'mover', ini:p, orig:new Map([...sel.nos].map(i=>{ const n=achar(i); return [i,{x:n.x,y:n.y}]; })), mexeu:false};
+    render(); renderFicha(); return;
+  }
+  if(!e.shiftKey){ sel.nos.clear(); sel.fio = null; }
+  if(e.pointerType==='touch') iniciarPan(e);
+  else drag = {modo:'laco', ini:p, p, base:new Set(sel.nos)};
+  render(); renderFicha();
+});
+window.addEventListener('pointermove', e=>{
+  if(!drag) return;
+  if(drag.modo==='pan'){ view.x = drag.vx + e.clientX-drag.sx; view.y = drag.vy + e.clientY-drag.sy; aplicarView(); return; }
+  if(drag.modo==='toque'){
+    if(!drag.moveu && Math.hypot(e.clientX-drag.sx, e.clientY-drag.sy) > 5){ drag.moveu = true; tela.classList.add('pan'); $('#tip').hidden = true; }
+    if(drag.moveu){ view.x = drag.vx + e.clientX-drag.sx; view.y = drag.vy + e.clientY-drag.sy; aplicarView(); }
+    return;
+  }
+  const p = mundoDe(e);
+  if(drag.modo==='ligar'){
+    drag.p = p;
+    const el = termSob(e);
+    document.querySelectorAll('#tela .term.alvo').forEach(x=>x.classList.remove('alvo'));
+    drag.alvo = (el && !(el.dataset.no===drag.de.no && el.dataset.term===drag.de.t)) ? {no:el.dataset.no, t:el.dataset.term} : null;
+    if(drag.alvo) el.classList.add('alvo');
+    desenharTemp();
+  } else if(drag.modo==='mover'){
+    const dx = p.x-drag.ini.x, dy = p.y-drag.ini.y;
+    drag.orig.forEach((o,id)=>{ const n=achar(id), nx=snap(o.x+dx), ny=snap(o.y+dy); if(nx!==n.x||ny!==n.y){ n.x=nx; n.y=ny; drag.mexeu=true; } });
+    if(drag.mexeu) render();
+  } else if(drag.modo==='laco'){
+    drag.p = p;
+    const x=Math.min(drag.ini.x,p.x), y=Math.min(drag.ini.y,p.y), w=Math.abs(p.x-drag.ini.x), h=Math.abs(p.y-drag.ini.y);
+    const l=$('#laco'); l.setAttribute('x',x); l.setAttribute('y',y); l.setAttribute('width',w); l.setAttribute('height',h); l.setAttribute('visibility','visible');
+  }
+});
+window.addEventListener('pointerup', e=>{
+  if(!drag) return;
+  const d = drag; drag = null;
+  tela.classList.remove('pan','ligando');
+  if(d.modo==='toque'){
+    if(d.segura){ d.segura.k=[false]; SIM.mudou.add(d.segura.id+'#0'); sel.nos = new Set([d.segura.id]); sel.fio=null; atualizarEnergia(); return; }
+    if(d.moveu) return;
+    const n = d.no && achar(d.no);
+    if(n){ sel.nos = new Set([n.id]); sel.fio = null;
+      if(acionar(n, d.k)){ fxOnda(d.p.x, d.p.y); fxFaiscas(d.p.x, d.p.y, 6, 22); atualizarEnergia(); }
+      else { render(); renderFicha(); } }
+    else if(d.fio){ sel.nos.clear(); sel.fio = d.fio; render(); renderFicha(); }
+    else { sel.nos.clear(); sel.fio = null; render(); renderFicha(); }
+    return;
+  }
+  if(d.modo==='ligar'){
+    $('#temp').setAttribute('d','');
+    const el = termSob(e);
+    const alvo = el ? {no:el.dataset.no, t:el.dataset.term} : null;
+    if(alvo){ const f = ligar(d.de, alvo); if(f){ sel.nos.clear(); sel.fio=f.id; commit(); } }
+    render(); renderFicha();
+  } else if(d.modo==='mover'){ if(d.mexeu){ commit(); renderFicha(); } }
+  else if(d.modo==='laco'){
+    $('#laco').setAttribute('visibility','hidden');
+    const x0=Math.min(d.ini.x,d.p.x), y0=Math.min(d.ini.y,d.p.y), x1=Math.max(d.ini.x,d.p.x), y1=Math.max(d.ini.y,d.p.y);
+    if(x1-x0>3 || y1-y0>3){
+      sel.nos = new Set(d.base);
+      S.nos.forEach(n=>{ const b=caixaNo(n); if(b.x<x1 && b.x+b.w>x0 && b.y<y1 && b.y+b.h>y0) sel.nos.add(n.id); });
+      render(); renderFicha();
+    }
+  }
+});
+tela.addEventListener('dblclick', e=>{
+  if(MODO==='sim') return;
+  const f = e.target.closest('.fio');
+  if(f){ S.fios = S.fios.filter(x=>x.id!==f.dataset.fio); sel.fio=null; commit(); render(); renderFicha(); toast('Fio removido'); }
+});
+tela.addEventListener('wheel', e=>{
+  e.preventDefault();
+  // no modo energizar, a roda sobre um dimmer muda o brilho
+  const dim = MODO==='sim' && e.target.closest('.no');
+  const n = dim && achar(dim.dataset.no);
+  if(n && n.tipo==='dimmer'){ n.nivel = Math.max(0, Math.min(100, nivelN(n) + (e.deltaY<0?5:-5))); if(!ligadoN(n)) n.on = true; salvarLocal(); atualizarEnergia(); return; }
+  const r = tela.getBoundingClientRect();
+  zoomEm(Math.exp(-e.deltaY*0.0015), e.clientX-r.left, e.clientY-r.top);
+}, {passive:false});
+tela.addEventListener('contextmenu', e=>e.preventDefault());
+// dica ao vivo no modo energizar
+const tip = $('#tip');
+tela.addEventListener('pointermove', e=>{
+  mouseMundo = mundoDe(e);
+  if(MODO!=='sim' || drag || !SIM.res){ tip.hidden = true; return; }
+  const noEl = e.target.closest('.no'), fioEl = !noEl && e.target.closest('.fio');
+  let h = '';
+  if(noEl){
+    const n = achar(noEl.dataset.no), r = SIM.res.nos.get(n.id), [pc, t] = statusNo(n, r);
+    const V = r.V || r.Vin || r.Vt, I = r.partes.length ? r.I : n.tipo==='medidor' ? SIM.res.entra : r.Ic;
+    h = `<b>${esc(nomeNo(n))}</b><span class="v ${pc==='on'?'vivo':pc==='erro'?'morto':''}">${t}</span><br><span class="v">${V} V · ${fmtA(I)}${r.W?' · '+fmtW(r.W):''}</span>${acionavel(n)?'<br><span class="v">Clique para '+(n.tipo==='puls'?'acionar':'ligar/desligar')+(n.tipo==='dimmer'?' · roda = brilho':'')+'</span>':''}`;
+  } else if(fioEl){
+    const f = acharFio(fioEl.dataset.fio), r = SIM.res.fios.get(f.id);
+    h = `<b>${esc(corInfo(f.cor).nome)} · ${esc(f.secao)} mm²</b>` + (r.I>0.0005 ? `<span class="v vivo">${r.V} V · ${fmtA(r.I)} ${r.estado==='neutra'?'voltando':'passando'}</span>` : r.estado==='viva' ? `<span class="v vivo">${r.V} V · sem corrente</span>` : r.estado==='morta' ? `<span class="v morto">Sem energia</span>` : `<span class="v">${r.estado==='neutra'?'Neutro parado':'Terra'}</span>`);
+  }
+  if(!h){ tip.hidden = true; return; }
+  tip.innerHTML = h; tip.hidden = false;
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  tip.style.left = Math.min(innerWidth-tw-10, e.clientX+16)+'px'; tip.style.top = Math.min(innerHeight-th-10, e.clientY+18)+'px';
+});
+tela.addEventListener('pointerleave', ()=>{ mouseMundo = null; tip.hidden = true; });
+
+/* drag & drop da gaveta */
+const gaveta = $('#gavetaLista');
+gaveta.addEventListener('dragstart', e=>{
+  const p = e.target.closest('.peca'); if(!p) return;
+  e.dataTransfer.setData('text/plain', p.dataset.tipo); e.dataTransfer.effectAllowed='copy';
+});
+let insercoes = 0;
+gaveta.addEventListener('click', e=>{
+  const p = e.target.closest('.peca'); if(!p) return;
+  const A = areaLivre(), off = (insercoes++%6)*20;
+  const no = adicionar(p.dataset.tipo, ((A.l+A.W-A.r)/2-view.x)/view.k+off, ((A.t+A.H-A.b)/2-view.y)/view.k+off);
+  sel.nos = new Set([no.id]); sel.fio=null; commit(); render(); renderFicha();
+  if(estreito()) alternarPainel('gaveta', false);
+});
+gaveta.addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && e.target.closest('.peca')){ e.preventDefault(); e.target.click(); } });
+tela.addEventListener('dragover', e=>{ e.preventDefault(); e.dataTransfer.dropEffect='copy'; });
+tela.addEventListener('drop', e=>{
+  e.preventDefault();
+  if(MODO==='sim') return;
+  const tipo = e.dataTransfer.getData('text/plain'); if(!CAT[tipo]) return;
+  const p = mundoDe(e), no = adicionar(tipo, p.x, p.y);
+  sel.nos = new Set([no.id]); sel.fio=null; commit(); render(); renderFicha();
+});
+
+/* ---------- barra de ferramentas ---------- */
+function swatchesHtml(ativa){
+  return Object.entries(CORES).map(([k,c])=>`<button class="sw${k==='vdam'?' vdam':''}${k===ativa?' ativo':''}" data-cor="${k}" style="--c:${c.hex}" title="${c.nome}" aria-label="${c.nome}"></button>`).join('');
+}
+function renderSws(){ $('#sws').innerHTML = swatchesHtml(ui.cor); }
+$('#sws').addEventListener('click', e=>{
+  const b = e.target.closest('.sw'); if(!b) return;
+  ui.cor = b.dataset.cor; renderSws();
+  if(sel.fio){ acharFio(sel.fio).cor = ui.cor; commit(); render(); renderFicha(); }
+});
+$('#corCustom').addEventListener('input', e=>{
+  ui.cor = e.target.value; renderSws();
+  if(sel.fio){ acharFio(sel.fio).cor = ui.cor; render(); }
+});
+$('#corCustom').addEventListener('change', ()=>{ if(sel.fio){ commit(); renderFicha(); } });
+$('#secao').addEventListener('change', e=>{ ui.secao = e.target.value; if(sel.fio){ acharFio(sel.fio).secao=ui.secao; commit(); render(); renderFicha(); } });
+$('#auto').addEventListener('change', e=>{ ui.auto = e.target.checked; });
+$('#valores').addEventListener('change', e=>{ ui.valores = e.target.checked; salvarUI(); if(MODO==='sim') render(); });
+function mudarQuadro(){
+  const px = (v, pad) => Math.round(Math.max(200, Math.min(20000, parseInt(v,10)||pad)));
+  S.quadro = {w:px($('#qw').value, 1200), h:px($('#qh').value, 800)}; sincronizarBarra(); commit(); render();
+}
+$('#qw').addEventListener('change', mudarQuadro); $('#qh').addEventListener('change', mudarQuadro);
+$('#escala').addEventListener('change', e=>{ S.escala = Math.max(1, Math.min(10000, +e.target.value||100)); e.target.value = S.escala; commit(); renderFicha(); });
+function sincronizarBarra(){ $('#qw').value = S.quadro.w; $('#qh').value = S.quadro.h; $('#estilo').value = S.estilo||'curva'; $('#escala').value = S.escala||100; $('#valores').checked = ui.valores; }
+$('#estilo').addEventListener('change', e=>{ S.estilo = e.target.value; commit(); render(); });
+$('#bDesfazer').onclick = desfazer; $('#bRefazer').onclick = refazer;
+const centroLivre = () => { const A = areaLivre(); return [(A.l+A.W-A.r)/2, (A.t+A.H-A.b)/2]; };
+$('#bZoomMais').onclick = ()=>zoomEm(1.2, ...centroLivre());
+$('#bZoomMenos').onclick = ()=>zoomEm(1/1.2, ...centroLivre());
+$('#bAjustar').onclick = ajustar;
+const pop = $('#popConfig');
+function posicionarPop(){ const r = $('#bConfig').getBoundingClientRect(); pop.style.left = Math.max(12, Math.min(innerWidth-312, r.right-300))+'px'; pop.style.top = (r.bottom+12)+'px'; }
+$('#bConfig').onclick = e=>{ e.stopPropagation(); pop.hidden = !pop.hidden; if(!pop.hidden) posicionarPop(); };
+document.addEventListener('pointerdown', e=>{ if(!pop.hidden && !pop.contains(e.target) && !e.target.closest('#bConfig')) pop.hidden = true; });
+$('#bNovo').onclick = ()=>{
+  definirModo('montar');
+  S = {v:2, quadro:{...S.quadro}, escala:S.escala, nos:[], fios:[], seq:S.seq, estilo:S.estilo, rede:S.rede}; sel.nos.clear(); sel.fio=null; exemplo=false;
+  pop.hidden = true; commit(); render(); renderFicha(); toast('Quadro limpo. Ctrl+Z desfaz.');
+};
+
+/* ficha: delegação */
+const noSel = () => sel.nos.size===1 ? achar([...sel.nos][0]) : null;
+function materializar(n){ if(!n.terms) n.terms = CAT[n.tipo].t.map(t=>({...t})); return n.terms; }
+function limparFiosOrfaos(n){ const ids = new Set(spec(n).t.map(t=>t.id)); S.fios = S.fios.filter(f=>!((f.de.no===n.id && !ids.has(f.de.t)) || (f.para.no===n.id && !ids.has(f.para.t)))); }
+const linhaTerm = el => { const r = el.closest('.trow'); return r ? +r.dataset.i : -1; };
+function aplicarEletrica(){ if(MODO==='sim'){ salvarLocal(); atualizarEnergia(); } else { commit(); render(); renderFicha(); } }
+const ficha = $('#fichaCorpo');
+ficha.addEventListener('click', e=>{
+  const alvo = e.target.closest('button,[data-acionar],[data-sel],.alerta,.sw'); if(!alvo) return;
+  const id = alvo.id, n = noSel();
+  const ac = e.target.closest('[data-acionar]');
+  if(ac){ const m = achar(ac.dataset.acionar); if(m && acionar(m, ac.dataset.k!=null ? +ac.dataset.k : null)){ sel.nos = new Set([m.id]); sel.fio = null; const b = caixaNo(m); fxOnda(b.x+b.w/2, b.y+b.h/2); atualizarEnergia(); } return; }
+  const sl = e.target.closest('[data-sel]');
+  if(sl){ sel.nos = new Set([sl.dataset.sel]); sel.fio = null; render(); renderFicha(); return; }
+  if(id==='addEntrada'){
+    definirModo('montar');
+    const m = adicionar('medidor', 80, 80, 'Padrão de entrada'); sel.nos = new Set([m.id]); commit(); render(); renderFicha();
+    toast('Entrada adicionada. Ligue F1 e N aos circuitos e energize de novo.'); return;
+  }
+  if(n && e.target.closest('.tDel')){
+    const ts = materializar(n); ts.splice(linhaTerm(e.target), 1);
+    limparFiosOrfaos(n); commit(); render(); renderFicha(); return;
+  }
+  if(n && id==='tAdd'){
+    const ts = materializar(n), nl = ts.filter(t=>t.s==='l').length, nr = ts.filter(t=>t.s==='r').length;
+    ts.push({id:novoId('t'), lb:'T'+(ts.length+1), ty:'X', s: nl<=nr?'l':'r'});
+    commit(); render(); renderFicha();
+    const ins = document.querySelectorAll('#fichaCorpo .tLb'); ins[ins.length-1]?.select(); return;
+  }
+  if(n && id==='tReset'){ delete n.terms; delete n.nome; limparFiosOrfaos(n); commit(); render(); renderFicha(); return; }
+  if(id==='fApagar'||id==='nApagar') apagarSelecao();
+  else if(id==='nGirar') girarSelecao();
+  else if(id==='nDup') duplicar();
+  const sw = e.target.closest('#fSws .sw');
+  if(sw && sel.fio){ acharFio(sel.fio).cor = sw.dataset.cor; ui.cor = sw.dataset.cor; renderSws(); commit(); render(); renderFicha(); }
+  const al = e.target.closest('.alerta');
+  if(al){ const a = window._alertas[+al.dataset.i]; if(a.fio){ sel.nos.clear(); sel.fio=a.fio; } else { sel.fio=null; sel.nos=new Set(a.nos); } render(); renderFicha(); }
+});
+// pulsador: segurar o botão da ficha
+ficha.addEventListener('pointerdown', e=>{
+  const b = e.target.closest('[data-segurar]'); if(!b) return;
+  const n = achar(b.dataset.segurar); n.k = [true]; SIM.mudou.add(n.id+'#0'); atualizarEnergia(true);
+  const soltar = () => { n.k = [false]; SIM.mudou.add(n.id+'#0'); atualizarEnergia(); window.removeEventListener('pointerup', soltar); };
+  window.addEventListener('pointerup', soltar);
+});
+ficha.addEventListener('input', e=>{
+  const n = noSel(); if(!n) return;
+  if(e.target.id==='nNivel'){ n.nivel = +e.target.value; if(!ligadoN(n) && MODO==='sim') n.on = true; $('#nNivelTxt').textContent = n.nivel+'%'; if(MODO==='sim'){ simular(); render(); atualizarDock(); } else render(); return; }
+  if(MODO==='sim') return;
+  if(e.target.id==='nRotulo'){ n.rotulo=e.target.value; render(); }
+  if(e.target.id==='nNome'){ if(e.target.value.trim()) n.nome=e.target.value; else delete n.nome; render(); }
+  if(e.target.classList.contains('tLb')){ materializar(n)[linhaTerm(e.target)].lb = e.target.value; render(); }
+});
+ficha.addEventListener('change', e=>{
+  const n = noSel();
+  if(n && e.target.id==='nAmp'){ n.amp = +e.target.value; aplicarEletrica(); return; }
+  if(n && e.target.id==='nW'){ n.w = Math.max(0, +e.target.value||0); aplicarEletrica(); return; }
+  if(n && e.target.id==='nW2'){ n.w2 = Math.max(0, +e.target.value||0); aplicarEletrica(); return; }
+  if(n && e.target.id==='nNivel'){ aplicarEletrica(); return; }
+  if(['nRotulo','nNome'].includes(e.target.id) || e.target.classList.contains('tLb')) commit(); // sem redesenhar a ficha, para não perder o foco ao usar Tab
+  if(n && (e.target.classList.contains('tTy') || e.target.classList.contains('tSd'))){
+    const t = materializar(n)[linhaTerm(e.target)];
+    if(e.target.classList.contains('tTy')) t.ty = e.target.value; else t.s = e.target.value;
+    commit(); render(); renderFicha();
+  }
+  if(e.target.id==='fSecao' && sel.fio){ acharFio(sel.fio).secao = e.target.value; commit(); render(); renderFicha(); }
+});
+
+/* teclado */
+const digitando = el => el && (el.tagName==='INPUT'||el.tagName==='TEXTAREA'||el.tagName==='SELECT');
+const modalAberto = () => !$('#modal').hidden || !$('#mAtalhos').hidden;
+let colouPeloEvento = false;
+window.addEventListener('keydown', e=>{
+  if(e.key==='Escape' && modalAberto()){ $('#modal').hidden = true; $('#mAtalhos').hidden = true; return; }
+  if(e.key==='Escape' && !pop.hidden){ pop.hidden = true; return; }
+  if(digitando(e.target) || modalAberto()) return;
+  const ctrl = e.ctrlKey||e.metaKey, k = e.key.toLowerCase(), [cx, cy] = centroLivre();
+  if(e.key===' '){ espaco=true; tela.classList.add('pan'); e.preventDefault(); return; }
+  if(!ctrl && k==='e'){ definirModo(MODO==='sim'?'montar':'sim'); return; }
+  if(!ctrl && e.key==='['){ alternarPainel('gaveta'); return; }
+  if(!ctrl && e.key===']'){ alternarPainel('ficha'); return; }
+  if(ctrl && k==='s'){ e.preventDefault(); abrirSalvar(); return; }
+  if(ctrl && k==='0'){ e.preventDefault(); ajustar(); return; }
+  if(k==='f' && !ctrl){ ajustar(); return; }
+  if(e.key==='+' || e.key==='='){ zoomEm(1.2, cx, cy); return; }
+  if(e.key==='-' || e.key==='_'){ zoomEm(1/1.2, cx, cy); return; }
+  if(e.key==='?'){ $('#mAtalhos').hidden = false; return; }
+  if(e.key==='Escape'){ sel.nos.clear(); sel.fio=null; render(); renderFicha(); return; }
+  if(MODO==='sim') return; // energizado: sem edição
+  if(ctrl && k==='z' && !e.shiftKey){ e.preventDefault(); desfazer(); }
+  else if(ctrl && (k==='y' || (k==='z'&&e.shiftKey))){ e.preventDefault(); refazer(); }
+  else if(ctrl && k==='d'){ e.preventDefault(); duplicar(); }
+  else if(ctrl && k==='a'){ e.preventDefault(); sel.nos=new Set(S.nos.map(n=>n.id)); sel.fio=null; render(); renderFicha(); }
+  else if(ctrl && (k==='c' || k==='x')){ const d = copiarSelecao(); if(d) areaInterna = d; } // o evento copy/cut faz o resto
+  else if(ctrl && k==='v'){ colouPeloEvento = false; setTimeout(()=>{ if(!colouPeloEvento && areaInterna) colar(areaInterna); }, 60); }
+  else if(ctrl) return;
+  else if(e.key==='Delete'||e.key==='Backspace'){ e.preventDefault(); apagarSelecao(); }
+  else if(k==='r'){ girarSelecao(e.shiftKey ? -90 : 90); }
+  else if(e.key.startsWith('Arrow') && sel.nos.size){
+    e.preventDefault();
+    const p = e.shiftKey ? 1 : GRID;
+    moverSelecao(e.key==='ArrowLeft'?-p:e.key==='ArrowRight'?p:0, e.key==='ArrowUp'?-p:e.key==='ArrowDown'?p:0);
+  }
+});
+// Ctrl+C / Ctrl+X / Ctrl+V pelos eventos do navegador (funciona também entre abas)
+document.addEventListener('copy', e=>{
+  if(digitando(document.activeElement) || modalAberto() || MODO==='sim') return;
+  const d = copiarSelecao(); if(!d) return;
+  areaInterna = d; e.clipboardData.setData('text/plain', JSON.stringify(d)); e.preventDefault();
+  toast(`${d.nos.length} componente${d.nos.length>1?'s':''} copiado${d.nos.length>1?'s':''}`);
+});
+document.addEventListener('cut', e=>{
+  if(digitando(document.activeElement) || modalAberto() || MODO==='sim') return;
+  const d = copiarSelecao(); if(!d) return;
+  areaInterna = d; e.clipboardData.setData('text/plain', JSON.stringify(d)); e.preventDefault();
+  apagarSelecao(); toast('Recortado. Ctrl+V cola.');
+});
+document.addEventListener('paste', e=>{
+  if(digitando(document.activeElement) || modalAberto() || MODO==='sim') return;
+  let dados = null;
+  try{ const o = JSON.parse(e.clipboardData.getData('text/plain')); if(o && o.painelLigacoes) dados = o; }catch(err){}
+  dados = dados || areaInterna; if(!dados) return;
+  e.preventDefault(); colouPeloEvento = true; colar(dados);
+});
+window.addEventListener('keyup', e=>{ if(e.key===' '){ espaco=false; if(!drag) tela.classList.remove('pan'); } });
+
+/* ---------- salvar / abrir ---------- */
+const modal = $('#modal');
+function abrirSalvar(){ $('#mJson').value = JSON.stringify(S, null, 1); modal.hidden=false; $('#sJson').focus(); }
+$('#bArquivo').onclick = abrirSalvar;
+$('#mFechar').onclick = ()=>{ modal.hidden=true; };
+modal.addEventListener('click', e=>{ if(e.target===modal) modal.hidden=true; });
+$('#bAtalhos').onclick = ()=>{ $('#mAtalhos').hidden=false; $('#aFechar').focus(); };
+$('#aFechar').onclick = ()=>{ $('#mAtalhos').hidden=true; };
+$('#mAtalhos').addEventListener('click', e=>{ if(e.target.id==='mAtalhos') e.target.hidden=true; });
+$('#mCopiar').onclick = ()=>{
+  const t=$('#mJson');
+  navigator.clipboard.writeText(t.value).then(()=>toast('Projeto copiado'), ()=>{ t.focus(); t.select(); toast('Texto selecionado: use Ctrl+C'); });
+};
+
+/* Salvar arquivo: no claude.ai usa a permissão de downloads; aberto direto no computador, um link de download */
+async function salvarArquivo(nome, dados){
+  let dl = null;
+  try{ dl = window.claude?.use ? await window.claude.use('downloads') : null; }catch(err){}
+  if(dl){
+    try{ await dl.save({filename:nome, data:dados}); toast(`${nome} salvo`); }
+    catch(err){
+      const c = err && err.code;
+      toast(c==='declined' ? 'Download cancelado' : c==='rate_limited' ? 'Já existe um download aguardando confirmação' : 'Não foi possível salvar o arquivo aqui');
+    }
+    return;
+  }
+  const blob = dados instanceof Blob ? dados : new Blob([dados]);
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nome;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
+  toast(`${nome} salvo`);
+}
+const nomeBase = () => ($('#sNome').value.trim() || 'projeto-eletrico').replace(/[\\/:*?"<>|]+/g,'-');
+
+/* Desenho para imagem: sempre no tema claro, sem seleção nem simulação, com os estilos copiados para dentro do SVG */
+const PROPS = ['fill','fill-opacity','stroke','stroke-width','stroke-dasharray','stroke-linecap','stroke-linejoin','opacity','font-family','font-size','font-weight','text-anchor','dominant-baseline','visibility'];
+function svgParaExportar(){
+  const raiz = document.documentElement, temaAntes = raiz.getAttribute('data-theme');
+  const selAntes = {nos:new Set(sel.nos), fio:sel.fio}, modoAntes = MODO;
+  raiz.setAttribute('data-theme','light'); sel.nos.clear(); sel.fio = null;
+  MODO = 'montar'; document.body.classList.remove('sim'); render();
+  try{
+    const bb = mundo.getBBox(), m = 24;
+    const x = Math.floor(bb.x-m), y = Math.floor(bb.y-m), w = Math.ceil(bb.width+m*2), h = Math.ceil(bb.height+m*2);
+    const clone = tela.cloneNode(true);
+    const orig = [tela, ...tela.querySelectorAll('*')], copia = [clone, ...clone.querySelectorAll('*')];
+    orig.forEach((el, i)=>{
+      if(el===tela) return;
+      const cs = getComputedStyle(el), alvo = copia[i];
+      if(el.classList.contains('hit') || el.tagName==='title') alvo.setAttribute('data-fora','1'); // áreas de clique invisíveis
+      alvo.removeAttribute('class');
+      PROPS.forEach(p=>{ const v = cs.getPropertyValue(p); if(v) alvo.style.setProperty(p, v); });
+    });
+    clone.querySelectorAll('[data-fora]').forEach(n=>n.remove());
+    clone.querySelector('#mundo').removeAttribute('transform');
+    clone.querySelector('#temp')?.remove(); clone.querySelector('#laco')?.remove();
+    const fundo = getComputedStyle(raiz).getPropertyValue('--bg').trim() || '#e9e8e3';
+    clone.setAttribute('xmlns','http://www.w3.org/2000/svg');
+    clone.setAttribute('viewBox', `${x} ${y} ${w} ${h}`); clone.setAttribute('width', w); clone.setAttribute('height', h);
+    clone.removeAttribute('style'); clone.removeAttribute('class');
+    clone.insertAdjacentHTML('afterbegin', `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fundo}"/>`);
+    return {svg: new XMLSerializer().serializeToString(clone), w, h};
+  } finally {
+    if(temaAntes===null) raiz.removeAttribute('data-theme'); else raiz.setAttribute('data-theme', temaAntes);
+    sel.nos = selAntes.nos; sel.fio = selAntes.fio;
+    MODO = modoAntes; document.body.classList.toggle('sim', MODO==='sim'); render();
+  }
+}
+function desenharCanvas(){
+  const {svg, w, h} = svgParaExportar();
+  const esc2 = Math.min(3, 8000/Math.max(w,h));
+  return new Promise((ok, falha)=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const cv = document.createElement('canvas'); cv.width = Math.round(w*esc2); cv.height = Math.round(h*esc2);
+      const ctx = cv.getContext('2d'); ctx.drawImage(img, 0, 0, cv.width, cv.height); ok(cv);
+    };
+    img.onerror = ()=>falha(new Error('imagem'));
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  });
+}
+async function comBotao(btn, tarefa){
+  btn.disabled = true;
+  try{ await tarefa(); } catch(err){ toast('Não consegui gerar o arquivo. Tente de novo.'); }
+  finally{ btn.disabled = false; }
+}
+$('#sJson').onclick = e=>comBotao(e.currentTarget, ()=>salvarArquivo(nomeBase()+'.json', JSON.stringify(S, null, 1)));
+$('#sPng').onclick = e=>comBotao(e.currentTarget, async ()=>{
+  const cv = await desenharCanvas();
+  const blob = await new Promise(r=>cv.toBlob(r, 'image/png'));
+  await salvarArquivo(nomeBase()+'.png', blob);
+});
+$('#sPdf').onclick = e=>comBotao(e.currentTarget, async ()=>{
+  if(!window.jspdf){ toast('O gerador de PDF não carregou. Verifique a conexão e tente de novo.'); return; }
+  const cv = await desenharCanvas();
+  const deitado = cv.width >= cv.height;
+  const doc = new window.jspdf.jsPDF({orientation: deitado?'landscape':'portrait', unit:'mm', format:'a4'});
+  const PW = doc.internal.pageSize.getWidth(), PH = doc.internal.pageSize.getHeight(), mg = 12;
+  const titulo = nomeBase();
+  doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text(titulo, mg, mg+2);
+  doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(90);
+  doc.text(`Quadro ${S.quadro.w} x ${S.quadro.h} px  ·  ${S.nos.length} componentes  ·  ${S.fios.length} fios  ·  ${new Date().toLocaleDateString('pt-BR')}`, mg, mg+7);
+  const aw = PW-mg*2, ah = PH-mg*2-12, k = Math.min(aw/cv.width, ah/cv.height);
+  doc.addImage(cv.toDataURL('image/jpeg', 0.92), 'JPEG', mg+(aw-cv.width*k)/2, mg+11, cv.width*k, cv.height*k);
+  // página 2: verificação e lista de materiais
+  doc.addPage('a4','portrait'); doc.setTextColor(20);
+  let y = 18; const W2 = doc.internal.pageSize.getWidth();
+  const linha = (txt, val, negrito) => {
+    if(y > 280){ doc.addPage('a4','portrait'); y = 18; }
+    doc.setFont('helvetica', negrito?'bold':'normal'); doc.text(String(txt), 14, y, {maxWidth: val!=null ? 150 : 182});
+    if(val!=null) doc.text(String(val), W2-14, y, {align:'right'});
+    y += 6.5;
+  };
+  doc.setFontSize(14); linha('Lista de materiais', null, true); doc.setFontSize(10); y += 2;
+  const cont = {}; S.nos.forEach(n=>cont[n.tipo]=(cont[n.tipo]||0)+1);
+  Object.entries(cont).forEach(([t,q])=>linha(CAT[t].nome, q+' un'));
+  const fios = {}; S.fios.forEach(f=>{ const k=f.cor+'|'+f.secao; fios[k]=(fios[k]||0)+compr(f); });
+  y += 2;
+  Object.entries(fios).forEach(([kk,m])=>{ const [cor,sec]=kk.split('|'); linha(`Cabo ${sec} mm² ${corInfo(cor).nome.toLowerCase()}`, m.toFixed(1).replace('.',',')+' m'); });
+  doc.setFontSize(8.5); doc.setTextColor(110); linha(`Comprimentos estimados pelo desenho (escala ${S.escala||100} px = 1 m) com 20% de folga.`); doc.setTextColor(20);
+  const al = verificar(); y += 4; doc.setFontSize(14); linha('Verificação', null, true); doc.setFontSize(10);
+  if(!al.length) linha('Nenhum problema encontrado.');
+  al.forEach(a=>linha(`${a.n==='erro'?'ERRO':'Aviso'}: ${a.m}`));
+  await salvarArquivo(titulo+'.pdf', doc.output('blob'));
+});
+
+function carregarTexto(txt){
+  try{
+    const o = migrar(JSON.parse(txt));
+    if(!o || !Array.isArray(o.nos) || !Array.isArray(o.fios) || !o.quadro) throw new Error();
+    o.nos = o.nos.filter(n=>CAT[n.tipo]);
+    o.seq = Math.max(o.seq||1, ...o.nos.map(n=>+String(n.id).slice(1)+1||1), ...o.fios.map(f=>+String(f.id).slice(1)+1||1));
+    definirModo('montar');
+    sel.nos.clear(); sel.fio=null; exemplo=false;
+    restaurar(JSON.stringify(o)); commit(); modal.hidden=true; ajustar(); toast('Projeto aberto');
+  }catch(err){ toast('Não consegui ler esse texto. Confira se é um projeto exportado por este editor.', true); }
+}
+$('#mCarregar').onclick = ()=>carregarTexto($('#mJson').value);
+$('#mArq').addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader(); r.onload = ()=>carregarTexto(r.result); r.readAsText(f); e.target.value='';
+});
+
+/* ---------- exemplo ---------- */
+function montarExemplo(){
+  S = {v:2, quadro:{w:1200,h:800}, escala:100, nos:[], fios:[], seq:1};
+  const P = (tipo,x,y,rot) => { const n={id:novoId('n'), tipo, x, y, rot:0, rotulo:rot||''}; S.nos.push(n); return n.id; };
+  const L = (a,ta,b,tb,cor,sec) => S.fios.push({id:novoId('f'), de:{no:a,t:ta}, para:{no:b,t:tb}, cor, secao:sec||'2,5'});
+  const med = P('medidor',30,40,'Padrão de entrada');
+  const dr  = P('dr2',220,40,'Geral');
+  const d1  = P('disj1',400,40,'C1 · Iluminação 10 A');
+  const bn  = P('barN',220,260);
+  const bt  = P('barPE',220,430);
+  const wf  = P('w221_3',580,40,'Fase');
+  const it  = P('int2',730,40,'Sala');
+  const l1  = P('lamp',960,30,'Sala');
+  const l2  = P('lamp',960,190,'Varanda');
+  const wn  = P('w221_5',730,300,'Neutro');
+  const cap = P('cap',960,360,'LED varanda');
+  achar(d1).amp = 10;
+  L(med,'F1',dr,'Li','vermelho','10'); L(med,'N',dr,'Ni','azul','10'); L(med,'PE',bt,'in','vdam','10');
+  L(dr,'Lo',d1,'i1','vermelho','4'); L(dr,'No',bn,'in','azul','4');
+  L(d1,'o1',wf,'1','vermelho','1,5'); L(wf,'2',it,'C','vermelho','1,5');
+  L(it,'R1',l1,'L','amarelo','1,5'); L(it,'R2',l2,'L','amarelo','1,5');
+  L(bn,'b1',wn,'1','azul','1,5'); L(wn,'4',l1,'N','azul','1,5'); L(wn,'5',l2,'N','azul','1,5');
+  L(l2,'L',cap,'A','amarelo','1,5'); L(wn,'3',cap,'B','azul','1,5');
+  L(bt,'b1',l1,'PE','vdam','1,5'); L(bt,'b2',l2,'PE','vdam','1,5');
+}
+
+/* ---------- início ---------- */
+document.querySelectorAll('[data-ic]').forEach(el=>el.insertAdjacentHTML('afterbegin', ic(el.dataset.ic)));
+let salvo = null;
+try{ salvo = localStorage.getItem(NS_KEY); }catch(e){}
+try{ if(salvo){ S = migrar(JSON.parse(salvo)); if(!S.nos) throw 0; } else throw 0; }
+catch(e){ montarExemplo(); exemplo = true; }
+sincronizarBarra();
+renderGaveta(); renderSws();
+hist = [JSON.stringify(S)]; hpos = 0; atualizarBotoes();
+if(estreito()){ ui.gaveta = false; ui.ficha = false; }
+atualizarPaineis();
+render(); renderFicha();
+requestAnimationFrame(()=>requestAnimationFrame(ajustar));
+document.fonts?.ready.then(()=>setTimeout(ajustar, 150));
+})();
+</script>
+</body>
+</html>
