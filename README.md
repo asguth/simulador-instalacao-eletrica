@@ -28,6 +28,12 @@ Pela linha de comando:
 gh release create v1.1.0 --generate-notes
 ```
 
+Enviar só a tag também publica (sem criar a página da release):
+
+```bash
+git tag v1.1.0 && git push origin v1.1.0
+```
+
 ## Rodar localmente
 
 É um único arquivo HTML: basta abrir o `index.html` no navegador.
