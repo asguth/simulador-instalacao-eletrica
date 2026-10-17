@@ -19,9 +19,9 @@
 <meta property="og:url" content="https://asguth.github.io/simulador-instalacao-eletrica/">
 <meta name="twitter:card" content="summary">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Painel de Ligações — Simulador de Instalação Elétrica","url":"https://asguth.github.io/simulador-instalacao-eletrica/","applicationCategory":"EducationalApplication","operatingSystem":"Any (navegador)","inLanguage":"pt-BR","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"BRL"},"author":{"@type":"Person","name":"Alberto Guth"},"license":"https://opensource.org/licenses/MIT"}</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+<!-- webfonts só em telas largas e depois do carregamento; no celular fica a fonte nativa do sistema (mais leve e sem troca de fonte) -->
+<script>if(matchMedia('(min-width:901px)').matches)addEventListener('load',()=>setTimeout(()=>{const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap';document.head.appendChild(l);}));</script>
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"></noscript>
 <style>
 /* Layout: o quadro (SVG) ocupa a tela inteira; toda a interface flutua por cima em painéis de vidro líquido */
 :root{
@@ -39,7 +39,7 @@
   --e-fase:#ff9500; --e-dot:#fff1b8; --e-neutro:#2ea3f2; --e-morto:#a8a7a0;
   --ok:#16a34a; --warn:#d97706; --err:#e5383b;
   --halo-blend:multiply; --halo-op:.55;
-  --f-ui:"Manrope",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --f-ui:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,"Roboto Mono",monospace;
   --mola:cubic-bezier(.34,1.56,.64,1); --suave:cubic-bezier(.22,1,.36,1);
   color-scheme:light;
 }
@@ -147,7 +147,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .btn.perigo{color:var(--err)}
 .btn.perigo:hover{background:color-mix(in srgb,var(--err) 12%,transparent)}
 .btn.mini{height:30px;width:30px;border-radius:10px}
-#zoomTxt{font-family:var(--f-mono);font-size:12px;min-width:46px;text-align:center;font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600}
+.zoom-txt{font-family:var(--f-mono);font-size:12px;min-width:46px;text-align:center;font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600}
 
 /* seletor de modo com "gota" deslizante */
 .seg{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:3px;border-radius:15px;background:var(--field);border:1px solid var(--field-brd);flex:none}
@@ -190,7 +190,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .gaveta.fechado,.sim .gaveta{transform:translate(calc(-100% - 30px),-50%);opacity:0;visibility:hidden;pointer-events:none}
 .ficha.fechado{transform:translate(calc(100% + 30px),-50%);opacity:0;visibility:hidden;pointer-events:none}
 .p-cab{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 10px 8px 16px}
-.p-tit{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14.5px;letter-spacing:-.01em}
+.p-tit{display:flex;align-items:center;gap:8px;margin:0;font-weight:800;font-size:14.5px;letter-spacing:-.01em}
 .p-tit .i{color:var(--accent)}
 .rolagem{flex:1;min-height:0;overflow:auto;padding:4px 14px 16px;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent;
   -webkit-mask:linear-gradient(transparent,#000 10px,#000 calc(100% - 18px),transparent);mask:linear-gradient(transparent,#000 10px,#000 calc(100% - 18px),transparent)}
@@ -212,6 +212,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .peca{display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 4px 7px;border:1px solid var(--field-brd);border-radius:15px;background:var(--field);cursor:grab;text-align:center;line-height:1.15;font-size:12px;font-weight:650;user-select:none;touch-action:manipulation;
   transition:transform .4s var(--mola),background .2s,border-color .25s,box-shadow .35s;animation:pecaEntra .55s var(--mola) both;animation-delay:calc(var(--n,0)*18ms)}
 @keyframes pecaEntra{from{opacity:0;transform:translateY(10px) scale(.94)}}
+.gaveta.fechado .peca,.sim .gaveta .peca{animation:none} /* entrada das peças toca ao abrir a gaveta */
 .peca:hover{transform:translateY(-3px);background:var(--field-h);border-color:color-mix(in srgb,var(--k) 55%,transparent);box-shadow:0 12px 24px -14px var(--k)}
 .peca:active{cursor:grabbing;transform:scale(.95)}
 .peca svg{width:46px;height:40px;pointer-events:none;transition:transform .5s var(--mola)}
@@ -367,12 +368,15 @@ input[type=range]{width:100%;accent-color:var(--accent);height:22px}
 @keyframes flutua{50%{transform:translateY(-5px)}}
 
 /* ---------- popover, modal, toast, dica ao vivo ---------- */
-.pop{position:fixed;z-index:40;top:76px;width:300px;padding:14px 16px;--r:20px;transform-origin:top right;animation:popEntra .45s var(--mola)}
+.pop{position:fixed;z-index:40;top:76px;width:300px;padding:14px 16px;overflow:auto;overscroll-behavior:contain;--r:20px;transform-origin:top right;animation:popEntra .45s var(--mola)}
 @keyframes popEntra{from{opacity:0;transform:translateY(-8px) scale(.94)}}
 .pop h4{margin:12px 0 6px;font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:800}
 .pop h4:first-child{margin-top:0}
 .pop .linha{display:flex;align-items:center;gap:6px}
 .pop select{width:100%}
+.pop-acoes{flex-wrap:wrap}
+.pop-tema{flex:1}
+.so-estreito{display:none}
 .fundo-modal{position:fixed;inset:0;background:rgba(0,0,0,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px;z-index:50;animation:fundoEntra .3s ease}
 @keyframes fundoEntra{from{opacity:0}}
 .caixa{padding:20px;width:min(620px,100%);display:flex;flex-direction:column;gap:12px;max-height:90%;overflow:auto;--r:26px;animation:caixaEntra .55s var(--mola)}
@@ -389,6 +393,7 @@ input[type=range]{width:100%;accent-color:var(--accent);height:22px}
 .fmt:disabled{opacity:.5;cursor:progress}
 .caixa details summary{cursor:pointer;font-size:13px;color:var(--muted);font-weight:650}
 .atalhos td:first-child{font-size:13px}
+.atalhos .so-toque{display:none}
 kbd{font-family:var(--f-mono);font-size:11px;border:1px solid var(--line-2);border-bottom-width:2px;border-radius:6px;padding:1px 5px;background:var(--field)}
 #toast{position:fixed;left:50%;top:78px;transform:translateX(-50%);z-index:60;padding:10px 16px;font-size:13.5px;font-weight:650;max-width:calc(100% - 32px);--r:16px;display:flex;align-items:center;gap:8px;animation:toastEntra .5s var(--mola)}
 #toast.erro{color:var(--err)}
@@ -608,17 +613,81 @@ kbd{font-family:var(--f-mono);font-size:11px;border:1px solid var(--line-2);bord
 .dim-trilho{fill:none;stroke:var(--node-line);stroke-width:2.2;stroke-linecap:round}
 .ico.desligado .dim-arc{opacity:.35}
 .rl-cont{transition:transform .3s}
+/* ---------- telas estreitas (tablet em pé e celular) ---------- */
 @media (max-width:900px){
-  .painel{top:auto;bottom:14px;left:12px!important;right:12px!important;width:auto!important;height:min(62vh,560px);max-height:none;transform:none;animation-name:entraBaixo}
-  .painel .rolagem{flex:1 1 auto}
+  .painel{top:auto;bottom:calc(12px + env(safe-area-inset-bottom));left:12px!important;right:12px!important;width:auto!important;height:min(62vh,560px);height:min(62dvh,560px);max-height:calc(100% - 96px);transform:none;animation-name:entraBaixo;z-index:27}
+  .painel .rolagem{flex:1 1 auto;overscroll-behavior:contain}
   .gaveta.fechado,.sim .gaveta{transform:translateY(calc(100% + 30px))}
   .ficha.fechado{transform:translateY(calc(100% + 30px))}
   .marca span:last-child,.seg button span,#bArquivo span{display:none}
-  #abrirGaveta,#abrirFicha{top:auto;bottom:90px;transform:none}
+  .fab{top:auto;bottom:calc(var(--db,90px) + 12px + env(safe-area-inset-bottom));transform:none}
+  #abrirGaveta{left:calc(12px + env(safe-area-inset-left))} #abrirFicha{right:calc(12px + env(safe-area-inset-right))}
   .fab:hover,.fab:active{transform:none}
-  .barra{top:10px}
+  .barra{top:calc(10px + env(safe-area-inset-top))}
+  .dock{bottom:calc(12px + env(safe-area-inset-bottom))}
   .osc{display:none}
   .leitura{min-width:70px}
+  .peca{padding:11px 4px 9px}
+}
+/* celular: barra só com o essencial, o resto vai para o menu de ajustes */
+@media (max-width:640px){
+  .barra{gap:2px;padding:5px;max-width:calc(100% - 20px)}
+  .barra .so-largo,.barra .sep{display:none}
+  .marca{padding:0 4px 0 2px}
+  .seg button{padding:0 13px;height:34px}
+  .btn.ico{width:38px;height:38px}
+  #bArquivo{width:38px;height:38px;padding:0}
+  .so-estreito{display:block}
+  .linha.so-estreito,.btn.so-estreito{display:inline-flex}
+  .pop .btn{height:40px}
+  .pop-acoes .btn{flex:1 1 auto}
+  /* dock de fio em duas linhas: cores (rolam na horizontal) e, embaixo, cor livre, seção e N/PE */
+  .dock{left:10px;right:10px;width:auto;max-width:none;justify-content:flex-start;gap:8px;padding:7px 8px;--r:20px}
+  #dockFio .dock-rot,.dock .so-largo{display:none}
+  .sws{flex-wrap:nowrap;overflow-x:auto;min-width:0;flex:1 1 100%;gap:7px;padding:4px 3px;margin:-4px 0;scrollbar-width:none;scroll-snap-type:x proximity;overscroll-behavior-x:contain}
+  #dockFio .tgl{margin-left:auto}
+  .sws::-webkit-scrollbar{display:none}
+  .sw{width:30px;height:30px;scroll-snap-align:start}
+  .cor-custom{width:30px;height:30px}
+  #secao{flex:1 1 auto;height:36px;padding:0 4px 0 8px;min-width:0}
+  .tgl{gap:6px}
+  /* dock de energia: leituras em grade compacta */
+  #dockEnergia{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 6px;padding:8px}
+  #dockEnergia .chave-geral{grid-column:1/-1;justify-content:center}
+  .leitura{min-width:0;padding:2px 4px;align-items:center;text-align:center}
+  .leitura b{font-size:16px}
+  .leitura small{font-size:9.5px;letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .fundo-modal{padding:calc(10px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom))}
+  .caixa{padding:18px 16px;max-height:100%}
+  .formatos{grid-template-columns:1fr}
+  .atalhos td:last-child{white-space:normal;max-width:48%}
+  #toast{top:calc(70px + env(safe-area-inset-top))}
+}
+@media (max-width:389px){ .marca{display:none} }
+@media (max-width:339px){ .btn.ico,#bArquivo{width:34px} .seg button{padding:0 10px} }
+/* com um painel aberto no celular, o dock sai de baixo dele */
+@media (max-width:900px){ .com-painel .dock{opacity:0;visibility:hidden;pointer-events:none} }
+/* paisagem no celular: pouca altura */
+@media (max-height:500px) and (max-width:950px){
+  /* paisagem: painéis voltam a ser laterais, com o quadro visível ao lado */
+  .painel{height:auto;top:calc(64px + env(safe-area-inset-top));max-height:none;width:min(340px,46vw)!important}
+  .gaveta{right:auto!important;left:calc(12px + env(safe-area-inset-left))!important}
+  .ficha{left:auto!important;right:calc(12px + env(safe-area-inset-right))!important}
+  .gaveta.fechado,.sim .gaveta{transform:translateX(calc(-100% - 30px))}
+  .ficha.fechado{transform:translateX(calc(100% + 30px))}
+  #dockEnergia{display:flex;flex-wrap:nowrap}
+  #dockEnergia .chave-geral .cg-txt small{display:none}
+}
+/* toque: campos com 16px evitam o zoom automático do iOS; sem efeitos de hover que "grudam" */
+@media (pointer:coarse){
+  .atalhos .so-toque{display:table-row}
+  .atalhos .so-toque td:last-child{font-family:var(--f-ui);font-size:12.5px;color:var(--ink)}
+  input,select,textarea,.busca input,.trow input,.trow select{font-size:16px}
+  .num{font-size:15px}
+}
+@media (hover:none){
+  .peca:hover,.alerta:hover,.linha-e:hover,.fmt:hover,.sw:hover,.btn.ico:hover .i,.peca:hover svg{transform:none}
+  .glass:hover::before{opacity:0}
 }
 /* versão e copyright */
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -685,30 +754,30 @@ kbd{font-family:var(--f-mono);font-size:11px;border:1px solid var(--line-2);bord
   <button class="btn ico" id="bDesfazer" title="Desfazer (Ctrl+Z)" aria-label="Desfazer" data-ic="desfazer"></button>
   <button class="btn ico" id="bRefazer" title="Refazer (Ctrl+Y)" aria-label="Refazer" data-ic="refazer"></button>
   <span class="sep"></span>
-  <button class="btn ico" id="bZoomMenos" title="Diminuir zoom" aria-label="Diminuir zoom" data-ic="zoomMenos"></button>
-  <span id="zoomTxt">100%</span>
-  <button class="btn ico" id="bZoomMais" title="Aumentar zoom" aria-label="Aumentar zoom" data-ic="zoomMais"></button>
+  <button class="btn ico so-largo" id="bZoomMenos" title="Diminuir zoom" aria-label="Diminuir zoom" data-ic="zoomMenos"></button>
+  <span id="zoomTxt" class="so-largo zoom-txt">100%</span>
+  <button class="btn ico so-largo" id="bZoomMais" title="Aumentar zoom" aria-label="Aumentar zoom" data-ic="zoomMais"></button>
   <button class="btn ico" id="bAjustar" title="Enquadrar tudo (F)" aria-label="Enquadrar tudo" data-ic="enquadrar"></button>
-  <span class="sep"></span>
-  <button class="btn ico" id="bConfig" title="Ajustes do quadro" aria-label="Ajustes do quadro" data-ic="ajustes"></button>
-  <button class="btn ico" id="bTema" title="Modo claro / escuro" aria-label="Alternar modo claro ou escuro">
+  <span class="sep so-largo"></span>
+  <button class="btn ico" id="bConfig" title="Ajustes do quadro" aria-label="Ajustes do quadro" aria-haspopup="true" aria-expanded="false" aria-controls="popConfig" data-ic="ajustes"></button>
+  <button class="btn ico so-largo" id="bTema" title="Modo claro / escuro" aria-label="Alternar modo claro ou escuro">
     <svg class="tema-ic" viewBox="0 0 24 24" aria-hidden="true">
       <mask id="mLua"><rect x="-4" y="-4" width="32" height="32" fill="#fff"/><circle class="lua-m" cx="25" cy="3" r="6" fill="#000"/></mask>
       <circle class="sol" cx="12" cy="12" r="4.4" mask="url(#mLua)"/>
       <g class="raios" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></g>
     </svg>
   </button>
-  <button class="btn ico" id="bAtalhos" title="Atalhos de teclado (?)" aria-label="Atalhos de teclado" data-ic="ajuda"></button>
+  <button class="btn ico so-largo" id="bAtalhos" title="Atalhos de teclado (?)" aria-label="Atalhos de teclado" data-ic="ajuda"></button>
   <button class="btn pri" id="bArquivo" title="Salvar ou abrir (Ctrl+S)" data-ic="salvar"><span>Salvar</span></button>
 </header>
 
 <aside class="painel gaveta glass" id="gaveta" aria-label="Componentes">
-  <div class="p-cab"><div class="p-tit" data-ic="caixa">Peças</div><button class="btn ico mini" id="fGaveta" title="Esconder peças ( [ )" aria-label="Esconder peças" data-ic="setaE"></button></div>
+  <div class="p-cab"><h2 class="p-tit" data-ic="caixa">Peças</h2><button class="btn ico mini" id="fGaveta" title="Esconder peças ( [ )" aria-label="Esconder peças" data-ic="setaE"></button></div>
   <label class="busca" data-ic="busca"><input id="buscaPeca" type="search" placeholder="Buscar peça…" aria-label="Buscar peça" autocomplete="off"></label>
   <div class="rolagem" id="gavetaLista"></div>
 </aside>
 <aside class="painel ficha glass" id="ficha" aria-label="Propriedades">
-  <div class="p-cab"><div class="p-tit" id="fichaTit"></div><button class="btn ico mini" id="fFicha" title="Esconder painel ( ] )" aria-label="Esconder painel" data-ic="setaD"></button></div>
+  <div class="p-cab"><h2 class="p-tit" id="fichaTit"></h2><button class="btn ico mini" id="fFicha" title="Esconder painel ( ] )" aria-label="Esconder painel" data-ic="setaD"></button></div>
   <div class="rolagem" id="fichaCorpo"></div>
 </aside>
 <button class="fab glass" id="abrirGaveta" title="Mostrar peças ( [ )" aria-label="Mostrar peças" data-ic="caixa" hidden></button>
@@ -721,7 +790,7 @@ kbd{font-family:var(--f-mono);font-size:11px;border:1px solid var(--line-2);bord
   <select id="secao" aria-label="Seção do fio" title="Seção do condutor">
     <option value="1,5">1,5 mm²</option><option value="2,5" selected>2,5 mm²</option><option value="4">4 mm²</option><option value="6">6 mm²</option><option value="10">10 mm²</option>
   </select>
-  <label class="tgl" title="Neutro sai azul-claro e terra verde-amarelo automaticamente"><input type="checkbox" id="auto" checked><span class="tgl-t"></span>Cor automática N/PE</label>
+  <label class="tgl" title="Neutro sai azul-claro e terra verde-amarelo automaticamente"><input type="checkbox" id="auto" checked><span class="tgl-t"></span><span><span class="so-largo">Cor automática </span>N/PE</span></label>
 </div>
 
 <div class="dock glass liquido" id="dockEnergia">
@@ -731,13 +800,22 @@ kbd{font-family:var(--f-mono);font-size:11px;border:1px solid var(--line-2);bord
   </button>
   <div class="osc" title="Forma de onda: tensão (amarelo) e corrente (azul)"><canvas id="osc" width="312" height="92"></canvas><span class="osc-off">SEM TENSÃO</span></div>
   <div class="leitura"><small>Tensão</small><b><span id="lV">0</span><i>V</i></b></div>
-  <div class="leitura fase"><small>Entra no quadro</small><b><span id="lIn">0,00</span><i>A</i></b></div>
-  <div class="leitura neutro"><small>Volta (neutro)</small><b><span id="lOut">0,00</span><i>A</i></b></div>
+  <div class="leitura fase"><small>Entra<span class="so-largo"> no quadro</span></small><b><span id="lIn">0,00</span><i>A</i></b></div>
+  <div class="leitura neutro"><small>Volta<span class="so-largo"> (neutro)</span></small><b><span id="lOut">0,00</span><i>A</i></b></div>
   <div class="leitura"><small>Potência</small><b><span id="lW">0</span><i id="lWu">W</i></b></div>
   <div class="leitura"><small>Consumo</small><b><span id="lWh">0,00</span><i>Wh</i></b></div>
 </div>
 
 <div class="pop glass" id="popConfig" hidden>
+  <div class="so-estreito">
+    <h4>Vista</h4>
+    <div class="linha">
+      <button class="btn ico suave" data-proxy="bZoomMenos" aria-label="Diminuir zoom" data-ic="zoomMenos"></button>
+      <span class="zoom-txt">100%</span>
+      <button class="btn ico suave" data-proxy="bZoomMais" aria-label="Aumentar zoom" data-ic="zoomMais"></button>
+      <button class="btn suave pop-tema" data-proxy="bTema">Claro / escuro</button>
+    </div>
+  </div>
   <h4>Tamanho do quadro</h4>
   <div class="linha"><input class="num" id="qw" type="number" min="200" max="20000" step="50" aria-label="Largura do quadro em pixels"><span class="unid">×</span><input class="num" id="qh" type="number" min="200" max="20000" step="50" aria-label="Altura do quadro em pixels"><span class="unid">px</span></div>
   <h4>Traçado dos fios</h4>
@@ -748,7 +826,10 @@ kbd{font-family:var(--f-mono);font-size:11px;border:1px solid var(--line-2);bord
   <select id="rede" aria-label="Tensão da rede" style="margin-bottom:10px"><option value="127">Rede 127 / 220 V</option><option value="220">Rede 220 / 380 V</option></select>
   <label class="tgl"><input type="checkbox" id="valores" checked><span class="tgl-t"></span>Mostrar corrente nos fios</label>
   <h4>Projeto</h4>
-  <button class="btn suave perigo" id="bNovo" data-ic="novo">Novo projeto em branco</button>
+  <div class="linha pop-acoes">
+    <button class="btn suave perigo" id="bNovo" data-ic="novo">Novo projeto em branco</button>
+    <button class="btn suave so-estreito" data-proxy="bAtalhos" data-ic="ajuda">Ajuda e créditos</button>
+  </div>
 </div>
 
 <div id="modal" class="fundo-modal" hidden>
@@ -776,8 +857,12 @@ kbd{font-family:var(--f-mono);font-size:11px;border:1px solid var(--line-2);bord
 </div>
 <div id="mAtalhos" class="fundo-modal" hidden>
   <div class="caixa glass" role="dialog" aria-labelledby="aTit">
-    <h2 id="aTit">Atalhos de teclado</h2>
+    <h2 id="aTit">Atalhos e comandos</h2>
     <table class="tabela atalhos">
+      <tr class="so-toque"><td>Zoom</td><td>Pinça com dois dedos</td></tr>
+      <tr class="so-toque"><td>Mover a vista</td><td>Arrastar um dedo no fundo</td></tr>
+      <tr class="so-toque"><td>Inserir peça</td><td>Toque na peça da gaveta</td></tr>
+      <tr class="so-toque"><td>Criar fio</td><td>Arrastar de um terminal a outro</td></tr>
       <tr><td>Montar ↔ Energizar</td><td><kbd>E</kbd></td></tr>
       <tr><td>Ligar / desligar (no modo Energizar)</td><td>Clique no componente ou na tecla</td></tr>
       <tr><td>Copiar · Recortar · Colar</td><td>Ctrl+C · Ctrl+X · Ctrl+V</td></tr>
@@ -803,7 +888,6 @@ kbd{font-family:var(--f-mono);font-size:11px;border:1px solid var(--line-2);bord
 <div id="toast" class="glass" hidden></div>
 <div id="tip" class="tip glass" hidden></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 (() => {
 const $ = s => document.querySelector(s);
@@ -1509,7 +1593,7 @@ const esc = s => String(s).replace(/[&<>"]/g, m=>({'&':'&amp;','<':'&lt;','>':'&
 
 /* ---------- render ---------- */
 const tela = $('#tela'), mundo = $('#mundo');
-function aplicarView(){ mundo.setAttribute('transform',`translate(${view.x},${view.y}) scale(${view.k})`); $('#zoomTxt').textContent = Math.round(view.k*100)+'%'; }
+function aplicarView(){ mundo.setAttribute('transform',`translate(${view.x},${view.y}) scale(${view.k})`); const z = Math.round(view.k*100)+'%'; document.querySelectorAll('.zoom-txt').forEach(el=>el.textContent = z); }
 
 function renderQuadro(){
   const W = S.quadro.w, H = S.quadro.h;
@@ -1667,7 +1751,10 @@ function fxPendentes(){
 
 /* ---------- gaveta ---------- */
 const semAcento = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+// a gaveta só é montada quando aparece pela primeira vez (no celular ela começa fechada)
+let gavetaPronta = false;
 function renderGaveta(){
+  gavetaPronta = true;
   let s = '', idx = 0;
   for(const [tit, cat, ids] of GRUPOS){
     s += `<div class="grupo-p"><h3 style="--k:var(--k-${cat})"><i></i>${tit}</h3><div class="pecas">`;
@@ -1942,7 +2029,7 @@ function definirModo(m){
     // começa tudo apagado para a energia "acender" o circuito
     SIM.prev.fios = new Map(S.fios.map(f=>[f.id,false]));
     SIM.prev.cargas = new Map(); S.nos.forEach(n=>cargas(n).forEach((L,p)=>SIM.prev.cargas.set(n.id+'|'+p,false)));
-    toast('Clique nos interruptores e disjuntores para ligar e desligar');
+    toast((matchMedia('(pointer:coarse)').matches ? 'Toque' : 'Clique')+' nos interruptores e disjuntores para ligar e desligar');
     varrer(); atualizarEnergia(); iniciarOsc();
   } else {
     pararOsc(); SIM.sobre.forEach(clearTimeout); SIM.sobre.clear(); SIM.res = null;
@@ -1959,13 +2046,23 @@ function atualizarPaineis(){
   $('#gaveta').classList.toggle('fechado', !ui.gaveta);
   $('#ficha').classList.toggle('fechado', !ui.ficha);
   $('#abrirGaveta').hidden = ui.gaveta; $('#abrirFicha').hidden = ui.ficha;
+  if(ui.gaveta && !gavetaPronta) renderGaveta();
   atualizarInsets();
 }
 function atualizarInsets(){
   const g = !estreito() && ui.gaveta && MODO!=='sim', f = !estreito() && ui.ficha;
+  document.body.classList.toggle('com-painel', (ui.gaveta && MODO!=='sim') || ui.ficha);
   document.body.style.setProperty('--gl', (g ? $('#gaveta').offsetWidth+28 : 16)+'px');
   document.body.style.setProperty('--fr', (f ? $('#ficha').offsetWidth+28 : 16)+'px');
+  alturaDock();
 }
+// os botões flutuantes do celular ficam logo acima do dock visível
+let alturaDockRAF = 0;
+function alturaDock(){
+  cancelAnimationFrame(alturaDockRAF);
+  alturaDockRAF = requestAnimationFrame(()=>document.body.style.setProperty('--db', ($(MODO==='sim' ? '#dockEnergia' : '#dockFio').offsetHeight+16)+'px'));
+}
+if(window.ResizeObserver){ const ro = new ResizeObserver(alturaDock); ro.observe($('#dockFio')); ro.observe($('#dockEnergia')); }
 function alternarPainel(qual, v){
   ui[qual] = v ?? !ui[qual];
   if(estreito() && ui[qual]) ui[qual==='gaveta'?'ficha':'gaveta'] = false;
@@ -2060,12 +2157,13 @@ function areaLivre(){
   if(H-t-b < 200){ b = 16; }
   return {l, r, t, b, W, H};
 }
-function ajustar(){
+function ajustar(animar=true){
   let x0=0, y0=0, x1=S.quadro.w, y1=S.quadro.h;
   S.nos.forEach(n=>{ const b=caixaNo(n); x0=Math.min(x0,b.x); y0=Math.min(y0,b.y); x1=Math.max(x1,b.x+b.w); y1=Math.max(y1,b.y+b.h+20); });
   const A = areaLivre(), m = 30, aw = A.W-A.l-A.r-m*2, ah = A.H-A.t-A.b-m*2;
   const k = Math.max(0.02, Math.min(2, Math.min(aw/(x1-x0), ah/(y1-y0))));
   view = {k, x:A.l+m+(aw-(x1-x0)*k)/2 - x0*k, y:A.t+m+(ah-(y1-y0)*k)/2 - y0*k};
+  if(!animar) return aplicarView();
   mundo.style.transition = 'transform .6s cubic-bezier(.22,1,.36,1)';
   aplicarView(); setTimeout(()=>mundo.style.transition='', 650);
 }
@@ -2090,8 +2188,34 @@ function desenharTemp(){
   temp.setAttribute('stroke', corInfo(cor).hex);
 }
 
+// pinça com dois dedos: zoom e arrasto da vista no celular
+const toques = new Map();
+function iniciarPinca(){
+  // desfaz o que o primeiro dedo tinha começado
+  if(drag){
+    if(drag.modo==='mover') drag.orig.forEach((o,id)=>{ const n=achar(id); if(n){ n.x=o.x; n.y=o.y; } });
+    if(drag.modo==='ligar') $('#temp').setAttribute('d','');
+    if(drag.modo==='laco') $('#laco').setAttribute('visibility','hidden');
+    if(drag.segura){ drag.segura.k=[false]; SIM.mudou.add(drag.segura.id+'#0'); atualizarEnergia(); }
+  }
+  tela.classList.remove('ligando'); tela.classList.add('pan'); $('#tip').hidden = true;
+  const [a,b] = [...toques.values()], r = tela.getBoundingClientRect();
+  drag = {modo:'pinca', d:Math.hypot(a.x-b.x, a.y-b.y)||1, cx:(a.x+b.x)/2-r.left, cy:(a.y+b.y)/2-r.top};
+  render();
+}
+function soltarToque(e){
+  if(!toques.delete(e.pointerId) || drag?.modo!=='pinca') return false;
+  if(!toques.size){ drag = null; tela.classList.remove('pan'); }
+  return true;
+}
+window.addEventListener('pointercancel', soltarToque);
 tela.addEventListener('pointerdown', e=>{
   if(e.button===2) return;
+  if(e.pointerType==='touch'){
+    toques.set(e.pointerId, {x:e.clientX, y:e.clientY});
+    if(toques.size===2){ iniciarPinca(); return; }
+    if(toques.size>2 || drag?.modo==='pinca') return;
+  }
   const p = mundoDe(e);
   if(e.button===1 || espaco){ e.preventDefault(); iniciarPan(e); return; }
   if(MODO==='sim'){
@@ -2123,7 +2247,15 @@ tela.addEventListener('pointerdown', e=>{
   render(); renderFicha();
 });
 window.addEventListener('pointermove', e=>{
+  if(toques.has(e.pointerId)) toques.set(e.pointerId, {x:e.clientX, y:e.clientY});
   if(!drag) return;
+  if(drag.modo==='pinca'){
+    if(toques.size<2) return;
+    const [a,b] = [...toques.values()], r = tela.getBoundingClientRect();
+    const d = Math.hypot(a.x-b.x, a.y-b.y)||1, cx = (a.x+b.x)/2-r.left, cy = (a.y+b.y)/2-r.top;
+    view.x += cx-drag.cx; view.y += cy-drag.cy; zoomEm(d/drag.d, cx, cy);
+    Object.assign(drag, {d, cx, cy}); return;
+  }
   if(drag.modo==='pan'){ view.x = drag.vx + e.clientX-drag.sx; view.y = drag.vy + e.clientY-drag.sy; aplicarView(); return; }
   if(drag.modo==='toque'){
     if(!drag.moveu && Math.hypot(e.clientX-drag.sx, e.clientY-drag.sy) > 5){ drag.moveu = true; tela.classList.add('pan'); $('#tip').hidden = true; }
@@ -2149,6 +2281,7 @@ window.addEventListener('pointermove', e=>{
   }
 });
 window.addEventListener('pointerup', e=>{
+  if(soltarToque(e)) return;
   if(!drag) return;
   const d = drag; drag = null;
   tela.classList.remove('pan','ligando');
@@ -2199,7 +2332,7 @@ tela.addEventListener('contextmenu', e=>e.preventDefault());
 const tip = $('#tip');
 tela.addEventListener('pointermove', e=>{
   mouseMundo = mundoDe(e);
-  if(MODO!=='sim' || drag || !SIM.res){ tip.hidden = true; return; }
+  if(MODO!=='sim' || drag || !SIM.res || e.pointerType==='touch'){ tip.hidden = true; return; }
   const noEl = e.target.closest('.no'), fioEl = !noEl && e.target.closest('.fio');
   let h = '';
   if(noEl){
@@ -2271,15 +2404,27 @@ $('#bDesfazer').onclick = desfazer; $('#bRefazer').onclick = refazer;
 const centroLivre = () => { const A = areaLivre(); return [(A.l+A.W-A.r)/2, (A.t+A.H-A.b)/2]; };
 $('#bZoomMais').onclick = ()=>zoomEm(1.2, ...centroLivre());
 $('#bZoomMenos').onclick = ()=>zoomEm(1/1.2, ...centroLivre());
-$('#bAjustar').onclick = ajustar;
+$('#bAjustar').onclick = ()=>ajustar();
 const pop = $('#popConfig');
-function posicionarPop(){ const r = $('#bConfig').getBoundingClientRect(); pop.style.left = Math.max(12, Math.min(innerWidth-312, r.right-300))+'px'; pop.style.top = (r.bottom+12)+'px'; }
-$('#bConfig').onclick = e=>{ e.stopPropagation(); pop.hidden = !pop.hidden; if(!pop.hidden) posicionarPop(); };
-document.addEventListener('pointerdown', e=>{ if(!pop.hidden && !pop.contains(e.target) && !e.target.closest('#bConfig')) pop.hidden = true; });
+function posicionarPop(){
+  const r = $('#barra').getBoundingClientRect(), b = $('#bConfig').getBoundingClientRect(), w = Math.min(300, innerWidth-24);
+  pop.style.width = w+'px'; pop.style.left = Math.max(12, Math.min(innerWidth-w-12, b.right-w))+'px';
+  pop.style.top = (r.bottom+10)+'px'; pop.style.maxHeight = (innerHeight-r.bottom-22)+'px';
+}
+function mostrarPop(v){ pop.hidden = !v; $('#bConfig').setAttribute('aria-expanded', v); if(v) posicionarPop(); }
+$('#bConfig').onclick = e=>{ e.stopPropagation(); mostrarPop(pop.hidden); };
+document.addEventListener('pointerdown', e=>{ if(!pop.hidden && !pop.contains(e.target) && !e.target.closest('#bConfig')) mostrarPop(false); });
+window.addEventListener('resize', ()=>{ if(!pop.hidden) posicionarPop(); });
+// no celular, zoom, tema e ajuda ficam dentro deste menu e repassam o clique para o botão da barra
+pop.addEventListener('click', e=>{
+  const b = e.target.closest('[data-proxy]'); if(!b) return;
+  if(b.dataset.proxy==='bAtalhos') mostrarPop(false);
+  $('#'+b.dataset.proxy).click();
+});
 $('#bNovo').onclick = ()=>{
   definirModo('montar');
   S = {v:2, quadro:{...S.quadro}, escala:S.escala, nos:[], fios:[], seq:S.seq, estilo:S.estilo, rede:S.rede}; sel.nos.clear(); sel.fio=null; exemplo=false;
-  pop.hidden = true; commit(); render(); renderFicha(); toast('Quadro limpo. Ctrl+Z desfaz.');
+  mostrarPop(false); commit(); render(); renderFicha(); toast('Quadro limpo. Ctrl+Z desfaz.');
 };
 
 /* ficha: delegação */
@@ -2356,7 +2501,7 @@ const modalAberto = () => !$('#modal').hidden || !$('#mAtalhos').hidden;
 let colouPeloEvento = false;
 window.addEventListener('keydown', e=>{
   if(e.key==='Escape' && modalAberto()){ $('#modal').hidden = true; $('#mAtalhos').hidden = true; return; }
-  if(e.key==='Escape' && !pop.hidden){ pop.hidden = true; return; }
+  if(e.key==='Escape' && !pop.hidden){ mostrarPop(false); return; }
   if(digitando(e.target) || modalAberto()) return;
   const ctrl = e.ctrlKey||e.metaKey, k = e.key.toLowerCase(), [cx, cy] = centroLivre();
   if(e.key===' '){ espaco=true; tela.classList.add('pan'); e.preventDefault(); return; }
@@ -2410,7 +2555,7 @@ window.addEventListener('keyup', e=>{ if(e.key===' '){ espaco=false; if(!drag) t
 
 /* ---------- salvar / abrir ---------- */
 const modal = $('#modal');
-function abrirSalvar(){ $('#mJson').value = JSON.stringify(S, null, 1); modal.hidden=false; $('#sJson').focus(); }
+function abrirSalvar(){ $('#mJson').value = JSON.stringify(S, null, 1); modal.hidden=false; $('#sJson').focus(); carregarJsPDF(); }
 $('#bArquivo').onclick = abrirSalvar;
 $('#mFechar').onclick = ()=>{ modal.hidden=true; };
 modal.addEventListener('click', e=>{ if(e.target===modal) modal.hidden=true; });
@@ -2499,8 +2644,19 @@ $('#sPng').onclick = e=>comBotao(e.currentTarget, async ()=>{
   const blob = await new Promise(r=>cv.toBlob(r, 'image/png'));
   await salvarArquivo(nomeBase()+'.png', blob);
 });
+// jsPDF só é baixado na primeira exportação em PDF (não pesa no carregamento da página)
+let jsPDFPromessa = null;
+function carregarJsPDF(){
+  if(window.jspdf) return Promise.resolve(true);
+  return jsPDFPromessa ||= new Promise(ok=>{
+    const sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    sc.onload = ()=>ok(!!window.jspdf); sc.onerror = ()=>{ jsPDFPromessa = null; ok(false); };
+    document.head.appendChild(sc);
+  });
+}
 $('#sPdf').onclick = e=>comBotao(e.currentTarget, async ()=>{
-  if(!window.jspdf){ toast('O gerador de PDF não carregou. Verifique a conexão e tente de novo.'); return; }
+  if(!await carregarJsPDF()){ toast('O gerador de PDF não carregou. Verifique a conexão e tente de novo.'); return; }
   const cv = await desenharCanvas();
   const deitado = cv.width >= cv.height;
   const doc = new window.jspdf.jsPDF({orientation: deitado?'landscape':'portrait', unit:'mm', format:'a4'});
@@ -2582,14 +2738,14 @@ let salvo = null;
 try{ salvo = localStorage.getItem(NS_KEY); }catch(e){}
 try{ if(salvo){ S = migrar(JSON.parse(salvo)); if(!S.nos) throw 0; } else throw 0; }
 catch(e){ montarExemplo(); exemplo = true; }
-sincronizarBarra();
-renderGaveta(); renderSws();
+sincronizarBarra(); renderSws();
 hist = [JSON.stringify(S)]; hpos = 0; atualizarBotoes();
 if(estreito()){ ui.gaveta = false; ui.ficha = false; }
 atualizarPaineis();
-render(); renderFicha();
-requestAnimationFrame(()=>requestAnimationFrame(ajustar));
-document.fonts?.ready.then(()=>setTimeout(ajustar, 150));
+// enquadra antes da primeira pintura, sem animar; gaveta e ficha ficam para a tarefa seguinte (carregamento mais leve no celular)
+render(); ajustar(false);
+setTimeout(()=>{ renderFicha(); atualizarInsets(); });
+document.fonts?.ready.then(()=>{ if(!sel.nos.size && !sel.fio) ajustar(false); });
 })();
 </script>
 </body>
