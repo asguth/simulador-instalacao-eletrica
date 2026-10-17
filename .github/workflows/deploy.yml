@@ -3,6 +3,8 @@ name: Publicar site
 on:
   release:
     types: [published]
+  push:
+    tags: ['v*']
   workflow_dispatch:
 
 permissions:
@@ -22,10 +24,13 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Montar site com a versão da release
         run: |
           VERSAO="${{ github.event.release.tag_name }}"
+          if [ -z "$VERSAO" ] && [ "$GITHUB_REF_TYPE" = "tag" ]; then VERSAO="$GITHUB_REF_NAME"; fi
           if [ -z "$VERSAO" ]; then VERSAO="$(git describe --tags --abbrev=0 2>/dev/null || echo dev)"; fi
           mkdir _site
           cp index.html LICENSE robots.txt sitemap.xml _site/
