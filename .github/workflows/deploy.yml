@@ -6,6 +6,10 @@ on:
   push:
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      versao:
+        description: 'Versão exibida no rodapé (ex.: v1.1.0)'
+        required: false
 
 permissions:
   contents: read
@@ -29,7 +33,7 @@ jobs:
 
       - name: Montar site com a versão da release
         run: |
-          VERSAO="${{ github.event.release.tag_name }}"
+          VERSAO="${{ github.event.release.tag_name || inputs.versao }}"
           if [ -z "$VERSAO" ] && [ "$GITHUB_REF_TYPE" = "tag" ]; then VERSAO="$GITHUB_REF_NAME"; fi
           if [ -z "$VERSAO" ]; then VERSAO="$(git describe --tags --abbrev=0 2>/dev/null || echo dev)"; fi
           mkdir _site
